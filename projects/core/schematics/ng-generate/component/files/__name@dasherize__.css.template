@@ -1,0 +1,22 @@
+/* Style against design tokens, never literals — that is what keeps this
+   component themeable by the consuming app. */
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+:host(.<%= selector %>--disabled) {
+  color: var(--tx-color-disabled-content);
+  pointer-events: none;
+}
+
+.<%= selector %>__label {
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-medium);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-muted);
+}

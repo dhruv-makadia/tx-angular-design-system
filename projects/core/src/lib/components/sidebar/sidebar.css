@@ -1,0 +1,264 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 16rem;
+  height: 100%;
+  min-height: 0;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface);
+  border-inline-end: var(--tx-border-width) solid var(--tx-color-border);
+  transition: width var(--tx-duration-md) var(--tx-ease-standard);
+}
+
+:host(.tx-sidebar--collapsed) {
+  width: 3.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+}
+
+/* --- brand ------------------------------------------------------------ */
+
+/*
+ * Two brand slots rather than one.
+ *
+ * Clipping a wordmark to a 3.5rem rail leaves a sliver of the first letter
+ * beside the icon, which reads as a rendering fault. The component cannot know
+ * which part of projected content is the mark and which is the text, so the
+ * consumer says: `slot="brand"` for the full lockup, `slot="brand-compact"` for
+ * the rail. Supply neither and the header collapses away entirely.
+ */
+.tx-sidebar__brand {
+  display: flex;
+  align-items: center;
+  min-height: 3.5rem;
+  padding-inline: var(--tx-space-3);
+  border-block-end: var(--tx-border-width) solid var(--tx-color-border);
+  overflow: hidden;
+}
+
+.tx-sidebar__brand:not(:has(.tx-sidebar__brand-full *)):not(:has(.tx-sidebar__brand-compact *)) {
+  display: none;
+}
+
+.tx-sidebar__brand-full,
+.tx-sidebar__brand-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  min-width: 0;
+}
+
+.tx-sidebar__brand-compact {
+  display: none;
+}
+
+:host(.tx-sidebar--collapsed) .tx-sidebar__brand {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+:host(.tx-sidebar--collapsed) .tx-sidebar__brand-full {
+  display: none;
+}
+
+:host(.tx-sidebar--collapsed) .tx-sidebar__brand-compact {
+  display: flex;
+}
+
+/* --- nav -------------------------------------------------------------- */
+
+.tx-sidebar__nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--tx-space-2);
+}
+
+.tx-sidebar__section + .tx-sidebar__section {
+  margin-block-start: var(--tx-space-4);
+}
+
+.tx-sidebar__section-label {
+  margin: 0 0 var(--tx-space-1);
+  padding-inline: var(--tx-space-2);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-subtle);
+  white-space: nowrap;
+}
+
+:host(.tx-sidebar--collapsed) .tx-sidebar__section-label {
+  /* A rule, not a label: keeps the grouping visible without the words. */
+  height: var(--tx-border-width);
+  margin-inline: var(--tx-space-2);
+  padding: 0;
+  overflow: hidden;
+  color: transparent;
+  background-color: var(--tx-color-border);
+}
+
+.tx-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.tx-sidebar__list--nested {
+  margin-block-start: 1px;
+  /* Aligns children under the parent's label rather than its icon. */
+  padding-inline-start: var(--tx-space-6);
+}
+
+.tx-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  width: 100%;
+  min-height: 2.25rem;
+  padding-inline: var(--tx-space-2);
+  font: inherit;
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+  text-align: start;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-md);
+  cursor: pointer;
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-sidebar__link:hover:not(:disabled) {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+}
+
+.tx-sidebar__link:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: -2px;
+}
+
+.tx-sidebar__link:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-sidebar__link--active {
+  color: var(--tx-color-accent);
+  background-color: var(--tx-color-accent-subtle);
+  font-weight: var(--tx-weight-semibold);
+}
+
+.tx-sidebar__link--child {
+  min-height: 2rem;
+  font-size: var(--tx-text-sm);
+}
+
+.tx-sidebar__icon {
+  flex: none;
+}
+
+.tx-sidebar__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * Collapsed hides labels visually but keeps them in the accessibility tree —
+ * display:none would strip the accessible name from every item.
+ */
+:host(.tx-sidebar--collapsed) .tx-sidebar__label,
+:host(.tx-sidebar--collapsed) .tx-sidebar__badge,
+:host(.tx-sidebar--collapsed) .tx-sidebar__chevron {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:host(.tx-sidebar--collapsed) .tx-sidebar__link {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.tx-sidebar__badge {
+  flex: none;
+  padding: 1px var(--tx-space-2);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface-muted);
+  background-color: var(--tx-color-surface-variant);
+  border-radius: var(--tx-radius-full);
+}
+
+.tx-sidebar__link--active .tx-sidebar__badge {
+  color: var(--tx-color-accent);
+  background-color: var(--tx-color-accent-muted);
+}
+
+.tx-sidebar__chevron {
+  flex: none;
+  color: var(--tx-color-on-surface-subtle);
+}
+
+/* --- footer ----------------------------------------------------------- */
+
+.tx-sidebar__footer {
+  padding: var(--tx-space-2);
+  border-block-start: var(--tx-border-width) solid var(--tx-color-border);
+}
+
+.tx-sidebar__collapse {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  width: 100%;
+  min-height: 2.25rem;
+  padding-inline: var(--tx-space-2);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-subtle);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-md);
+  cursor: pointer;
+}
+
+.tx-sidebar__collapse:hover {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+}
+
+.tx-sidebar__collapse:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: -2px;
+}
+
+:host(.tx-sidebar--collapsed) .tx-sidebar__collapse {
+  justify-content: center;
+  padding-inline: 0;
+}

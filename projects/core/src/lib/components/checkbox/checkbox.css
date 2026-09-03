@@ -1,0 +1,99 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+.tx-checkbox__row {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--tx-space-2);
+  cursor: pointer;
+}
+
+:host(.tx-checkbox--disabled) .tx-checkbox__row {
+  cursor: not-allowed;
+  color: var(--tx-color-disabled-content);
+}
+
+.tx-checkbox__control {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  margin-block-start: 1px;
+}
+
+/*
+ * The native input stays in the layer and in the a11y tree — clipped, not
+ * display:none — so it keeps native focus, form and autofill behaviour.
+ */
+.tx-checkbox__native {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.tx-checkbox__box {
+  display: grid;
+  place-items: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: transparent;
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border-strong);
+  border-radius: var(--tx-radius-sm);
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    border-color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-checkbox__box svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.tx-checkbox__native:checked + .tx-checkbox__box,
+.tx-checkbox__native:indeterminate + .tx-checkbox__box {
+  color: var(--tx-color-on-accent);
+  background-color: var(--tx-color-accent);
+  border-color: var(--tx-color-accent);
+}
+
+.tx-checkbox__native:focus-visible + .tx-checkbox__box {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 2px;
+}
+
+.tx-checkbox__row:hover .tx-checkbox__native:not(:disabled) + .tx-checkbox__box {
+  border-color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-checkbox__native:disabled + .tx-checkbox__box {
+  background-color: var(--tx-color-disabled-surface);
+  border-color: var(--tx-color-border);
+}
+
+:host(.tx-checkbox--invalid) .tx-checkbox__box {
+  border-color: var(--tx-color-danger);
+}
+
+.tx-checkbox__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tx-checkbox__required {
+  color: var(--tx-color-danger);
+  margin-inline-start: 2px;
+}
+
+.tx-checkbox__hint {
+  font-size: var(--tx-text-xs);
+  color: var(--tx-color-on-surface-muted);
+}

@@ -1,0 +1,97 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+:host(.tx-input--invalid) .tx-field__control {
+  border-color: var(--tx-color-danger);
+}
+
+:host(.tx-input--disabled) .tx-field__control {
+  background-color: var(--tx-color-disabled-surface);
+  border-color: var(--tx-color-border);
+}
+
+.tx-input__field {
+  flex: 1;
+  min-width: 0;
+  min-height: calc(var(--tx-density-control-height) - 2px);
+  padding-inline: var(--tx-density-control-padding-x);
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+}
+
+.tx-input__field:focus-visible {
+  /* The ring belongs to .tx-field__control so it wraps affixes too. */
+  outline: none;
+}
+
+.tx-input__field::placeholder {
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-input__field:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+/* Hide the browser's own search affordances: we supply our own clear button. */
+.tx-input__field[type='search']::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+/* Collapse the affix wrappers when nothing is projected into them. */
+.tx-field__affix:not(:has(*)) {
+  display: none;
+}
+
+.tx-input__prefix {
+  padding-inline-end: 0;
+}
+
+.tx-input__suffix {
+  padding-inline-start: 0;
+}
+
+.tx-input__clear {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  margin-inline-end: var(--tx-space-2);
+  padding: 0;
+  color: var(--tx-color-on-surface-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-full);
+  cursor: pointer;
+}
+
+.tx-input__clear:hover {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+}
+
+.tx-input__clear svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.tx-field__desc {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--tx-space-3);
+}
+
+.tx-input__counter {
+  flex: none;
+  font-family: var(--tx-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface-subtle);
+}

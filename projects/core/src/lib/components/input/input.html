@@ -1,0 +1,51 @@
+@if (label()) {
+  <label class="tx-field__label" [attr.for]="id">
+    {{ label() }}
+    @if (required()) {
+      <span class="tx-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="tx-field__control">
+  <span class="tx-field__affix tx-input__prefix"><ng-content select="[slot=prefix]" /></span>
+
+  <input
+    #field
+    class="tx-input__field"
+    [id]="id"
+    [type]="type()"
+    [value]="value()"
+    [placeholder]="placeholder()"
+    [disabled]="isDisabled()"
+    [readOnly]="readonly()"
+    [attr.required]="required() || null"
+    [attr.aria-invalid]="invalid() || null"
+    [attr.aria-describedby]="describedBy()"
+    [attr.autocomplete]="autocomplete() || null"
+    [attr.maxlength]="maxLength()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    (focus)="focused.emit($event)"
+    (blur)="onBlur($event)"
+  />
+
+  @if (showClear()) {
+    <button type="button" class="tx-input__clear" [attr.aria-label]="clearLabel" (click)="clear()">
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" />
+      </svg>
+    </button>
+  }
+
+  <span class="tx-field__affix tx-input__suffix"><ng-content select="[slot=suffix]" /></span>
+</div>
+
+@if (hint() || error() || counter()) {
+  <p class="tx-field__desc" [class.tx-field__desc--error]="invalid() && error()" [id]="id + '-desc'">
+    <span>{{ invalid() && error() ? error() : hint() }}</span>
+    @if (counter(); as count) {
+      <span class="tx-input__counter">{{ count }}</span>
+    }
+  </p>
+}

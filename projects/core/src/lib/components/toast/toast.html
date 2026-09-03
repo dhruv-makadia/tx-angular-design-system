@@ -1,0 +1,28 @@
+<ol class="tx-toast-region__list">
+  @for (toast of items(); track toast.id) {
+    <li
+      class="tx-toast"
+      [attr.data-kind]="toast.kind"
+      role="status"
+      [attr.aria-live]="toast.ariaLive"
+    >
+      <tx-icon class="tx-toast__icon" [name]="icon(toast.kind)" size="sm" />
+      <span class="tx-toast__message">{{ toast.message }}</span>
+
+      @if (toast.action) {
+        <button type="button" class="tx-toast__action" (click)="act(toast)">
+          {{ toast.action }}
+        </button>
+      }
+
+      <button
+        type="button"
+        class="tx-toast__dismiss"
+        [attr.aria-label]="dismissLabel"
+        (click)="toasts.dismiss(toast.id)"
+      >
+        <tx-icon name="close" size="sm" />
+      </button>
+    </li>
+  }
+</ol>

@@ -1,0 +1,30 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { <%= classify(prefix) %><%= classify(name) %> } from './<%= dasherize(name) %>';
+
+describe('<%= classify(prefix) %><%= classify(name) %>', () => {
+  let fixture: ComponentFixture<<%= classify(prefix) %><%= classify(name) %>>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [<%= classify(prefix) %><%= classify(name) %>],
+    }).compileComponents();
+    fixture = TestBed.createComponent(<%= classify(prefix) %><%= classify(name) %>);
+    fixture.detectChanges();
+  });
+
+  it('creates', () => {
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('renders the label when one is given', () => {
+    fixture.componentRef.setInput('label', 'Example');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Example');
+  });
+
+  it('reflects the disabled state on the host', () => {
+    fixture.componentRef.setInput('disabled', true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.classList).toContain('<%= selector %>--disabled');
+  });
+});

@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Install and wire up @tx-angular-design-system/core: peer dependencies, Tailwind, the theme import, and an overrides stub.",
+      "factory": "./ng-add/index#ngAdd",
+      "schema": "./ng-add/schema.json",
+      "aliases": ["install", "setup"]
+    },
+    "component": {
+      "description": "Generate a component pre-wired with the design system's conventions.",
+      "factory": "./ng-generate/component/index#component",
+      "schema": "./ng-generate/component/schema.json"
+    }
+  }
+}

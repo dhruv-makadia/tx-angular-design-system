@@ -1,0 +1,200 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-lg);
+  overflow: hidden;
+}
+
+/* Wide tables scroll inside their own container so the page never does. */
+.tx-table__scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.tx-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+}
+
+.tx-table__caption {
+  padding: var(--tx-space-3) var(--tx-density-cell-padding-x);
+  font-family: var(--tx-font-display);
+  font-size: var(--tx-text-lg);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-tight);
+  text-align: start;
+  color: var(--tx-color-on-surface);
+}
+
+/* --- header ----------------------------------------------------------- *
+ * The "Instrument" data treatment: monospaced, uppercase, letter-spaced.
+ * ---------------------------------------------------------------------- */
+
+.tx-table__head--sticky {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--tx-z-sticky);
+}
+
+.tx-table__th {
+  padding: var(--tx-density-cell-padding-y) var(--tx-density-cell-padding-x);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  text-align: start;
+  white-space: nowrap;
+  color: var(--tx-color-on-surface-muted);
+  background-color: var(--tx-color-surface-variant);
+  border-block-end: var(--tx-border-width) solid var(--tx-color-border);
+}
+
+.tx-table__th--end {
+  text-align: end;
+}
+
+.tx-table__th--center {
+  text-align: center;
+}
+
+.tx-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tx-space-1);
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+}
+
+.tx-table__th--end .tx-table__sort {
+  flex-direction: row-reverse;
+}
+
+.tx-table__sort:hover {
+  color: var(--tx-color-on-surface);
+}
+
+.tx-table__sort:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 2px;
+}
+
+.tx-table__sort-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: none;
+  opacity: 0.35;
+  transition:
+    opacity var(--tx-duration-fast) var(--tx-ease-standard),
+    transform var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-table__sort:hover .tx-table__sort-icon {
+  opacity: 0.6;
+}
+
+.tx-table__sort-icon--active {
+  opacity: 1;
+  color: var(--tx-color-accent);
+}
+
+.tx-table__sort-icon--desc {
+  transform: rotate(180deg);
+}
+
+/* --- body ------------------------------------------------------------- */
+
+.tx-table__row {
+  border-block-end: var(--tx-border-width) solid var(--tx-color-border);
+  transition: background-color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-table__body tr:last-child {
+  border-block-end: 0;
+}
+
+.tx-table__row:hover {
+  background-color: var(--tx-color-hover);
+}
+
+.tx-table__td {
+  height: var(--tx-density-row-height);
+  padding: var(--tx-density-cell-padding-y) var(--tx-density-cell-padding-x);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.tx-table__td--end {
+  text-align: end;
+}
+
+.tx-table__td--center {
+  text-align: center;
+}
+
+/* Identifiers, references and measurements align down the column. */
+.tx-table__td--data,
+.tx-table__td--numeric {
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.tx-table__td--numeric {
+  text-align: end;
+}
+
+/* --- states ----------------------------------------------------------- */
+
+.tx-table__state {
+  padding: var(--tx-space-10) var(--tx-density-cell-padding-x);
+  text-align: center;
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-table__state-row:hover {
+  background-color: transparent;
+}
+
+.tx-table__spinner {
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-inline-end: var(--tx-space-2);
+  vertical-align: -2px;
+  border: 2px solid var(--tx-color-border);
+  border-block-start-color: var(--tx-color-accent);
+  border-radius: var(--tx-radius-full);
+  animation: tx-table-spin 700ms linear infinite;
+}
+
+@keyframes tx-table-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-table__spinner {
+    animation-duration: 2s;
+  }
+}
+
+/* --- footer ----------------------------------------------------------- */
+
+.tx-table__footer {
+  border-block-start: var(--tx-border-width) solid var(--tx-color-border);
+  background-color: var(--tx-color-surface);
+}

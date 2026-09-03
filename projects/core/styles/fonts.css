@@ -1,0 +1,49 @@
+/*!
+ * @tx-angular-design-system/core — self-hosted typefaces
+ *
+ * All faces are SIL Open Font License 1.1, which explicitly permits embedding,
+ * self-hosting and redistribution. No network fetch, no CDN — these files ship
+ * inside the package so the library works in air-gapped builds.
+ *
+ * Payload (latin subset, weight axis only):
+ *   tx-sans.woff2      IBM Plex Sans Variable   44.6 KB
+ *   tx-display.woff2   Archivo Variable         34.1 KB
+ *   tx-mono-400.woff2  IBM Plex Mono 400        14.4 KB
+ *   tx-mono-600.woff2  IBM Plex Mono 600        15.3 KB
+ *                                    total    ~108.4 KB
+ *
+ * Consumers who already load these faces can skip this file and import
+ * tokens.css directly; --tx-font-* then points at their copies.
+ */
+
+@font-face {
+  font-family: 'TX Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 700;
+  src: url('./fonts/tx-sans.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'TX Display';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./fonts/tx-display.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'TX Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('./fonts/tx-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'TX Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('./fonts/tx-mono-600.woff2') format('woff2');
+}

@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+.tx-textarea__control {
+  align-items: stretch;
+}
+
+:host(.tx-textarea--invalid) .tx-field__control {
+  border-color: var(--tx-color-danger);
+}
+
+:host(.tx-textarea--disabled) .tx-field__control {
+  background-color: var(--tx-color-disabled-surface);
+  border-color: var(--tx-color-border);
+}
+
+.tx-textarea__field {
+  flex: 1;
+  min-width: 0;
+  padding: var(--tx-space-2) var(--tx-density-control-padding-x);
+  font: inherit;
+  line-height: var(--tx-leading-md);
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+  resize: vertical;
+}
+
+.tx-textarea__field:focus-visible {
+  outline: none;
+}
+
+.tx-textarea__field::placeholder {
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-textarea__field:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-field__desc {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--tx-space-3);
+}
+
+.tx-textarea__counter {
+  flex: none;
+  font-family: var(--tx-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface-subtle);
+}

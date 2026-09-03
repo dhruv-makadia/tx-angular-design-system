@@ -1,0 +1,134 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+.tx-reorder-list__empty {
+  margin: 0;
+  padding: var(--tx-space-5);
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+  text-align: center;
+}
+
+.tx-reorder-list__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tx-space-1);
+}
+
+.tx-reorder-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  padding: var(--tx-space-2);
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-md);
+}
+
+.tx-reorder-list__item--locked {
+  background-color: var(--tx-color-surface-variant);
+  color: var(--tx-color-on-surface-muted);
+}
+
+/* CDK clones the row while dragging; the clone is what the user sees move. */
+.tx-reorder-list__item.cdk-drag-preview {
+  box-shadow: var(--tx-elevation-3);
+  border-color: var(--tx-color-accent);
+}
+
+ /* The placeholder replaces the row in the flow, so it must reserve the same
+   height — otherwise the list jumps as the drag starts. */
+.tx-reorder-list__placeholder {
+  min-height: 2.75rem;
+  background-color: var(--tx-color-accent-subtle);
+  border: var(--tx-border-width-thick) dashed var(--tx-color-accent-muted);
+  border-radius: var(--tx-radius-md);
+}
+
+.cdk-drop-list-dragging .tx-reorder-list__item:not(.cdk-drag-placeholder) {
+  transition: transform var(--tx-duration-md) var(--tx-ease-standard);
+}
+
+.tx-reorder-list__handle {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  padding: 0;
+  color: var(--tx-color-on-surface-subtle);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-sm);
+  cursor: grab;
+}
+
+.tx-reorder-list__handle:hover:not(:disabled) {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+}
+
+.tx-reorder-list__handle:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+.tx-reorder-list__handle:active:not(:disabled) {
+  cursor: grabbing;
+}
+
+.tx-reorder-list__handle:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-reorder-list__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tx-reorder-list__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--tx-text-sm);
+}
+
+.tx-reorder-list__hint {
+  font-size: var(--tx-text-xs);
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-reorder-list__position {
+  flex: none;
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-reorder-list__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdk-drop-list-dragging .tx-reorder-list__item:not(.cdk-drag-placeholder) {
+    transition: none;
+  }
+}

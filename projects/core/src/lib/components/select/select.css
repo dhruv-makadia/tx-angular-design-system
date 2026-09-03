@@ -1,0 +1,200 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+:host(.tx-select--invalid) .tx-field__control {
+  border-color: var(--tx-color-danger);
+}
+
+:host(.tx-select--disabled) .tx-field__control {
+  background-color: var(--tx-color-disabled-surface);
+  border-color: var(--tx-color-border);
+}
+
+/* --- trigger ---------------------------------------------------------- */
+
+.tx-select__trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  min-height: calc(var(--tx-density-control-height) - 2px);
+  padding-block: 0;
+  padding-inline: var(--tx-density-control-padding-x);
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.tx-select__trigger:focus-visible {
+  /* The ring is drawn on .tx-field__control so it wraps the whole field. */
+  outline: none;
+}
+
+.tx-select__trigger:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-select__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-select__value--placeholder {
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-select__arrow {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  margin-inline-end: var(--tx-space-2);
+  color: var(--tx-color-on-surface-muted);
+  pointer-events: none;
+  transition: transform var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+:host(.tx-select--open) .tx-select__arrow {
+  transform: rotate(180deg);
+}
+
+.tx-select__clear {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  padding: 0;
+  color: var(--tx-color-on-surface-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-full);
+  cursor: pointer;
+}
+
+.tx-select__clear:hover {
+  background-color: var(--tx-color-hover);
+  color: var(--tx-color-on-surface);
+}
+
+.tx-select__clear svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* --- panel ------------------------------------------------------------ */
+
+.tx-select__panel {
+  /* The CDK pane is display:flex, so a lone child shrink-wraps to its
+     content. Fill the pane so the panel matches the trigger width. */
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-height: 18rem;
+  overflow: hidden;
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-lg);
+  box-shadow: var(--tx-elevation-3);
+}
+
+.tx-select__filter {
+  padding: var(--tx-space-2);
+  border-block-end: var(--tx-border-width) solid var(--tx-color-border);
+}
+
+.tx-select__filter-input {
+  width: 100%;
+  min-height: 2rem;
+  padding-inline: var(--tx-space-2);
+  font: inherit;
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface);
+  border: var(--tx-border-width) solid var(--tx-color-border-strong);
+  border-radius: var(--tx-radius-sm);
+}
+
+.tx-select__filter-input:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: -1px;
+  border-color: var(--tx-color-focus);
+}
+
+.tx-select__status {
+  margin: 0;
+  padding: var(--tx-space-4);
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+  text-align: center;
+}
+
+.tx-select__list {
+  margin: 0;
+  padding: var(--tx-space-1);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.tx-select__list:focus {
+  outline: none;
+}
+
+.tx-select__group {
+  padding: var(--tx-space-2) var(--tx-space-3) var(--tx-space-1);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-select__option {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--tx-space-2) var(--tx-space-3);
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+  scroll-margin: var(--tx-space-1);
+}
+
+.tx-select__option:hover {
+  background-color: var(--tx-color-hover);
+}
+
+/* Aria's Option directive reflects state to these attributes. */
+.tx-select__option[aria-selected='true'] {
+  background-color: var(--tx-color-selected);
+  color: var(--tx-color-accent);
+  font-weight: var(--tx-weight-medium);
+}
+
+.tx-select__option:focus-visible,
+.tx-select__option[data-active='true'] {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: -2px;
+}
+
+.tx-select__option[aria-disabled='true'] {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.tx-select__option-hint {
+  font-size: var(--tx-text-xs);
+  color: var(--tx-color-on-surface-muted);
+}

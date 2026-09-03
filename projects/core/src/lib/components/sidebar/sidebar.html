@@ -1,0 +1,129 @@
+<div class="tx-sidebar__brand">
+  <div class="tx-sidebar__brand-full"><ng-content select="[slot=brand]" /></div>
+  <div class="tx-sidebar__brand-compact"><ng-content select="[slot=brand-compact]" /></div>
+</div>
+
+<nav class="tx-sidebar__nav" [attr.aria-label]="label()">
+  @for (section of sections(); track section.label ?? $index) {
+    <div class="tx-sidebar__section">
+      @if (section.label) {
+        <p class="tx-sidebar__section-label" [attr.aria-hidden]="collapsed() ? 'true' : null">
+          {{ section.label }}
+        </p>
+      }
+
+      <ul class="tx-sidebar__list">
+        @for (item of section.items; track item.id) {
+          <li class="tx-sidebar__item">
+            @if (item.children?.length) {
+              <button
+                type="button"
+                class="tx-sidebar__link tx-sidebar__link--group"
+                [class.tx-sidebar__link--active]="hasActiveChild(item)"
+                [disabled]="item.disabled"
+                [attr.aria-expanded]="isOpen(item)"
+                (click)="toggleGroup(item)"
+              >
+                @if (item.icon) {
+                  <tx-icon class="tx-sidebar__icon" [name]="item.icon" size="sm" />
+                }
+                <span class="tx-sidebar__label">{{ item.label }}</span>
+                <tx-icon
+                  class="tx-sidebar__chevron"
+                  [name]="isOpen(item) ? 'chevron-up' : 'chevron-down'"
+                  size="sm"
+                />
+              </button>
+
+              @if (isOpen(item) && !collapsed()) {
+                <ul class="tx-sidebar__list tx-sidebar__list--nested">
+                  @for (child of item.children; track child.id) {
+                    <li>
+                      @if (child.href) {
+                        <a
+                          class="tx-sidebar__link tx-sidebar__link--child"
+                          [class.tx-sidebar__link--active]="isActive(child)"
+                          [href]="child.href"
+                          [attr.aria-current]="isActive(child) ? 'page' : null"
+                          (click)="select(child, $event)"
+                        >
+                          <span class="tx-sidebar__label">{{ child.label }}</span>
+                          @if (child.badge !== undefined) {
+                            <span class="tx-sidebar__badge">{{ child.badge }}</span>
+                          }
+                        </a>
+                      } @else {
+                        <button
+                          type="button"
+                          class="tx-sidebar__link tx-sidebar__link--child"
+                          [class.tx-sidebar__link--active]="isActive(child)"
+                          [disabled]="child.disabled"
+                          [attr.aria-current]="isActive(child) ? 'page' : null"
+                          (click)="select(child)"
+                        >
+                          <span class="tx-sidebar__label">{{ child.label }}</span>
+                          @if (child.badge !== undefined) {
+                            <span class="tx-sidebar__badge">{{ child.badge }}</span>
+                          }
+                        </button>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            } @else if (item.href) {
+              <a
+                class="tx-sidebar__link"
+                [class.tx-sidebar__link--active]="isActive(item)"
+                [href]="item.href"
+                [attr.aria-current]="isActive(item) ? 'page' : null"
+                [attr.title]="collapsed() ? item.label : null"
+                (click)="select(item, $event)"
+              >
+                @if (item.icon) {
+                  <tx-icon class="tx-sidebar__icon" [name]="item.icon" size="sm" />
+                }
+                <span class="tx-sidebar__label">{{ item.label }}</span>
+                @if (item.badge !== undefined) {
+                  <span class="tx-sidebar__badge">{{ item.badge }}</span>
+                }
+              </a>
+            } @else {
+              <button
+                type="button"
+                class="tx-sidebar__link"
+                [class.tx-sidebar__link--active]="isActive(item)"
+                [disabled]="item.disabled"
+                [attr.aria-current]="isActive(item) ? 'page' : null"
+                [attr.title]="collapsed() ? item.label : null"
+                (click)="select(item)"
+              >
+                @if (item.icon) {
+                  <tx-icon class="tx-sidebar__icon" [name]="item.icon" size="sm" />
+                }
+                <span class="tx-sidebar__label">{{ item.label }}</span>
+                @if (item.badge !== undefined) {
+                  <span class="tx-sidebar__badge">{{ item.badge }}</span>
+                }
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</nav>
+
+<div class="tx-sidebar__footer">
+  <ng-content select="[slot=footer]" />
+  <button
+    type="button"
+    class="tx-sidebar__collapse"
+    [attr.aria-label]="collapsed() ? expandLabel : collapseLabel"
+    [attr.aria-expanded]="!collapsed()"
+    (click)="toggleCollapsed()"
+  >
+    <tx-icon [name]="collapsed() ? 'chevron-right' : 'chevron-left'" size="sm" />
+    <span class="tx-sidebar__label">{{ collapseLabel }}</span>
+  </button>
+</div>

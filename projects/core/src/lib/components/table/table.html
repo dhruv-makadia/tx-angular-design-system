@@ -1,0 +1,86 @@
+<div class="tx-table__scroll">
+  <table class="tx-table__table" [attr.aria-label]="label() || null" [attr.aria-busy]="loading() || null">
+    @if (caption()) {
+      <caption class="tx-table__caption">{{ caption() }}</caption>
+    }
+
+    <thead class="tx-table__head" [class.tx-table__head--sticky]="stickyHeader()">
+      <tr>
+        @for (column of visibleColumns(); track column.key) {
+          <th
+            scope="col"
+            class="tx-table__th"
+            [class.tx-table__th--end]="column.align === 'end'"
+            [class.tx-table__th--center]="column.align === 'center'"
+            [style.width]="column.width"
+            [attr.aria-sort]="ariaSort(column)"
+          >
+            @if (isSortable(column)) {
+              <button type="button" class="tx-table__sort" (click)="toggleSort(column)">
+                <span>{{ column.header }}</span>
+                <svg
+                  class="tx-table__sort-icon"
+                  [class.tx-table__sort-icon--active]="sortDirectionOf(column) !== null"
+                  [class.tx-table__sort-icon--desc]="sortDirectionOf(column) === 'desc'"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M8 3.5v9M4.5 9L8 12.5L11.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                </svg>
+              </button>
+            } @else {
+              <span>{{ column.header }}</span>
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+
+    <tbody class="tx-table__body">
+      @if (loading()) {
+        <tr class="tx-table__state-row">
+          <td class="tx-table__state" [attr.colspan]="visibleColumns().length">
+            <span class="tx-table__spinner" aria-hidden="true"></span>
+            <span role="status">{{ loadingLabel }}</span>
+          </td>
+        </tr>
+      } @else if (isEmpty()) {
+        <tr class="tx-table__state-row">
+          <td class="tx-table__state" [attr.colspan]="visibleColumns().length">
+            <ng-content select="[txTableEmpty]">
+              <span>{{ emptyText() }}</span>
+            </ng-content>
+          </td>
+        </tr>
+      } @else {
+        @for (row of rows(); track trackRow($index, row)) {
+          <tr class="tx-table__row" (click)="onRowClick(row)">
+            @for (column of visibleColumns(); track column.key) {
+              <td
+                class="tx-table__td"
+                [class.tx-table__td--data]="column.variant === 'data'"
+                [class.tx-table__td--numeric]="column.variant === 'numeric'"
+                [class.tx-table__td--end]="column.align === 'end'"
+                [class.tx-table__td--center]="column.align === 'center'"
+              >
+                {{ cellValue(column, row) }}
+              </td>
+            }
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (paginated()) {
+  <div class="tx-table__footer">
+    <tx-paginator
+      [length]="length()"
+      [pageSizeOptions]="pageSizeOptions()"
+      [page]="page()"
+      (pageChange)="onPage($event)"
+    />
+  </div>
+}

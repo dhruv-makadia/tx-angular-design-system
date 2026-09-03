@@ -1,0 +1,16 @@
+<button
+  class="tx-button__el"
+  [type]="type()"
+  [disabled]="isDisabled()"
+  [attr.aria-label]="ariaLabel() || null"
+  [attr.aria-busy]="loading() || null"
+  (click)="onClick($event)"
+>
+  @if (loading()) {
+    <span class="tx-button__spinner" aria-hidden="true"></span>
+  } @else {
+    <ng-content select="[slot=leading]" />
+  }
+  <span class="tx-button__label"><ng-content /></span>
+  <ng-content select="[slot=trailing]" />
+</button>

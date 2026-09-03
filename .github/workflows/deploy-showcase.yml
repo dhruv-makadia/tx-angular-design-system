@@ -1,0 +1,60 @@
+name: Deploy showcase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  NG_CLI_ANALYTICS: 'false'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm approve-scripts esbuild || true
+      - run: npm run build:lib
+
+      # Pages serves the site from /<repo>/, so the base href has to match or
+      # every asset 404s.
+      - name: Build showcase
+        run: npx ng build showcase --base-href "/${{ github.event.repository.name }}/"
+
+      # Pages has no SPA fallback: an unknown path returns 404.html, so serve
+      # the app from there too and let the router take over.
+      - name: Add SPA fallback
+        run: cp dist/showcase/browser/index.html dist/showcase/browser/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/showcase/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

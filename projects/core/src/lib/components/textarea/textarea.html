@@ -1,0 +1,39 @@
+@if (label()) {
+  <label class="tx-field__label" [attr.for]="id">
+    {{ label() }}
+    @if (required()) {
+      <span class="tx-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="tx-field__control tx-textarea__control">
+  <textarea
+    class="tx-textarea__field"
+    [id]="id"
+    [value]="value()"
+    [placeholder]="placeholder()"
+    [disabled]="isDisabled()"
+    [readOnly]="readonly()"
+    [rows]="minRows()"
+    [cdkTextareaAutosize]="autosize()"
+    [cdkAutosizeMinRows]="minRows()"
+    [cdkAutosizeMaxRows]="maxRows()"
+    [attr.required]="required() || null"
+    [attr.aria-invalid]="invalid() || null"
+    [attr.aria-describedby]="describedBy()"
+    [attr.maxlength]="maxLength()"
+    (input)="onInput($event)"
+    (focus)="focused.emit($event)"
+    (blur)="onBlur($event)"
+  ></textarea>
+</div>
+
+@if (hint() || error() || counter()) {
+  <p class="tx-field__desc" [class.tx-field__desc--error]="invalid() && error()" [id]="id + '-desc'">
+    <span>{{ invalid() && error() ? error() : hint() }}</span>
+    @if (counter(); as count) {
+      <span class="tx-textarea__counter">{{ count }}</span>
+    }
+  </p>
+}

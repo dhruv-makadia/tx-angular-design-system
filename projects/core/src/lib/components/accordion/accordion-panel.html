@@ -1,0 +1,29 @@
+<h3 class="tx-accordion-panel__heading">
+  <button
+    type="button"
+    class="tx-accordion-panel__trigger"
+    ngAccordionTrigger
+    [panel]="panel"
+    [id]="id + '-trigger'"
+    [disabled]="disabled()"
+    [expanded]="expanded()"
+    (expandedChange)="onExpanded($event)"
+  >
+    @if (icon()) {
+      <tx-icon class="tx-accordion-panel__icon" [name]="icon()" size="sm" />
+    }
+    <span class="tx-accordion-panel__text">
+      <span class="tx-accordion-panel__label">{{ label() }}</span>
+      @if (hint()) {
+        <span class="tx-accordion-panel__hint">{{ hint() }}</span>
+      }
+    </span>
+    <tx-icon class="tx-accordion-panel__chevron" name="chevron-down" size="sm" />
+  </button>
+</h3>
+
+<div class="tx-accordion-panel__body" ngAccordionPanel #panel="ngAccordionPanel" [id]="id + '-panel'">
+  <div class="tx-accordion-panel__content">
+    <ng-content />
+  </div>
+</div>

@@ -1,0 +1,120 @@
+@if (label()) {
+  <label class="tx-field__label" [attr.for]="id + '-trigger'">
+    {{ label() }}
+    @if (required()) {
+      <span class="tx-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="tx-field__control" #control cdkOverlayOrigin #origin="cdkOverlayOrigin">
+  <button
+    #trigger
+    type="button"
+    class="tx-select__trigger"
+    role="combobox"
+    [id]="id + '-trigger'"
+    [attr.aria-expanded]="expanded()"
+    [attr.aria-controls]="expanded() ? id + '-panel' : null"
+    [attr.aria-describedby]="hint() || error() ? id + '-desc' : null"
+    [attr.aria-label]="label() ? null : ariaLabel() || null"
+    [attr.aria-required]="required() || null"
+    [attr.aria-invalid]="invalid() || null"
+    aria-haspopup="listbox"
+    [disabled]="isDisabled()"
+    (click)="toggle()"
+    (keydown)="onTriggerKeydown($event)"
+  >
+    <span class="tx-select__value" [class.tx-select__value--placeholder]="!selected()">
+      {{ displayText() || placeholder() }}
+    </span>
+  </button>
+
+  @if (clearable() && selected() && !isDisabled() && !readonly()) {
+    <button
+      type="button"
+      class="tx-select__clear"
+      [attr.aria-label]="clearLabel"
+      (click)="clear($event)"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" />
+      </svg>
+    </button>
+  }
+
+  <svg class="tx-select__arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </svg>
+</div>
+
+@if (hint() || error()) {
+  <p class="tx-field__desc" [class.tx-field__desc--error]="invalid() && error()" [id]="id + '-desc'">
+    {{ invalid() && error() ? error() : hint() }}
+  </p>
+}
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="expanded()"
+  [cdkConnectedOverlayMatchWidth]="matchTriggerWidth"
+  [cdkConnectedOverlayViewportMargin]="8"
+  [cdkConnectedOverlayOffsetY]="4"
+  (overlayOutsideClick)="onOutsideClick($event)"
+  (detach)="close(false)"
+>
+  <div class="tx-select__panel" [id]="id + '-panel'" (keydown)="onPanelKeydown($event)">
+    @if (showFilter()) {
+      <div class="tx-select__filter">
+        <input
+          #filter
+          type="text"
+          class="tx-select__filter-input"
+          [attr.aria-label]="filterLabel"
+          [value]="filterText()"
+          (input)="filterText.set($any($event.target).value)"
+          (keydown.arrowdown)="focusList($event)"
+          (keydown.enter)="focusList($event)"
+        />
+      </div>
+    }
+
+    @if (loading()) {
+      <p class="tx-select__status" role="status">{{ loadingLabel }}</p>
+    } @else if (filtered().length === 0) {
+      <p class="tx-select__status" role="status">{{ emptyText() }}</p>
+    } @else {
+      <ul
+        #listbox
+        class="tx-select__list"
+        ngListbox
+        [value]="listboxValue()"
+        (valueChange)="onListboxValue($any($event))"
+        [multi]="false"
+        selectionMode="explicit"
+        [attr.aria-label]="label() || placeholder()"
+      >
+        @for (group of groups(); track group.name) {
+          @if (group.name) {
+            <li class="tx-select__group" role="presentation">{{ group.name }}</li>
+          }
+          @for (option of group.options; track option.value) {
+            <li
+              class="tx-select__option"
+              ngOption
+              [value]="option.value"
+              [label]="option.label"
+              [disabled]="!!option.disabled"
+            >
+              <span class="tx-select__option-label">{{ option.label }}</span>
+              @if (option.hint) {
+                <span class="tx-select__option-hint">{{ option.hint }}</span>
+              }
+            </li>
+          }
+        }
+      </ul>
+    }
+  </div>
+</ng-template>

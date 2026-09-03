@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+.tx-tree__filter {
+  padding-block-end: var(--tx-space-2);
+}
+
+.tx-tree__filter-input {
+  width: 100%;
+  min-height: 2rem;
+  padding-inline: var(--tx-space-2);
+  font: inherit;
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border-strong);
+  border-radius: var(--tx-radius-sm);
+}
+
+.tx-tree__filter-input::placeholder {
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-tree__filter-input:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+  border-color: var(--tx-color-focus);
+}
+
+.tx-tree__empty {
+  margin: 0;
+  padding: var(--tx-space-5);
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+  text-align: center;
+}
+
+.tx-tree__root,
+.tx-tree__group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tx-tree__root:focus {
+  outline: none;
+}
+
+/* Each level indents by one step; the twisty column keeps rows aligned. */
+.tx-tree__group {
+  padding-inline-start: var(--tx-space-5);
+}
+
+.tx-tree__row {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  min-height: 2rem;
+  padding-inline: var(--tx-space-2);
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+  transition: background-color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-tree__row:hover {
+  background-color: var(--tx-color-hover);
+}
+
+.tx-tree__item[aria-selected='true'] > .tx-tree__row {
+  color: var(--tx-color-accent);
+  background-color: var(--tx-color-selected);
+  font-weight: var(--tx-weight-medium);
+}
+
+.tx-tree__item:focus-visible > .tx-tree__row,
+.tx-tree__item[data-active='true'] > .tx-tree__row {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: -2px;
+}
+
+.tx-tree__item[aria-disabled='true'] > .tx-tree__row {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-tree__item:focus {
+  outline: none;
+}
+
+.tx-tree__twisty {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--tx-color-on-surface-subtle);
+  transition: transform var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-tree__twisty--open {
+  transform: rotate(90deg);
+}
+
+.tx-tree__twisty--leaf {
+  /* Occupies the twisty column so leaf labels line up with branch labels. */
+  display: inline-block;
+}
+
+.tx-tree__icon {
+  flex: none;
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-tree__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--tx-text-sm);
+}
+
+.tx-tree__badge {
+  flex: none;
+  padding: 1px var(--tx-space-2);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface-muted);
+  background-color: var(--tx-color-surface-variant);
+  border-radius: var(--tx-radius-full);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-tree__twisty {
+    transition: none;
+  }
+}

@@ -1,0 +1,135 @@
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+:host(.tx-button--full) {
+  display: flex;
+  width: 100%;
+}
+
+.tx-button__el {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tx-space-2);
+  width: 100%;
+  min-height: var(--tx-density-control-height);
+  padding-inline: var(--tx-space-4);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  font-weight: var(--tx-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--tx-color-on-accent);
+  background-color: var(--tx-color-accent);
+  border: var(--tx-border-width) solid transparent;
+  border-radius: var(--tx-radius-md);
+  cursor: pointer;
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    border-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-button__el:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 2px;
+}
+
+.tx-button__el:disabled {
+  cursor: not-allowed;
+  color: var(--tx-color-disabled-content);
+  background-color: var(--tx-color-disabled-surface);
+  border-color: transparent;
+}
+
+/* --- size ------------------------------------------------------------- */
+
+:host([data-size='sm']) .tx-button__el {
+  min-height: calc(var(--tx-density-control-height) - 0.5rem);
+  padding-inline: var(--tx-space-3);
+  font-size: var(--tx-text-sm);
+}
+
+:host([data-size='lg']) .tx-button__el {
+  min-height: calc(var(--tx-density-control-height) + 0.5rem);
+  padding-inline: var(--tx-space-6);
+  font-size: var(--tx-text-lg);
+}
+
+/* --- variant ---------------------------------------------------------- */
+
+:host([data-variant='filled']) .tx-button__el:hover:not(:disabled) {
+  background-color: var(--tx-color-accent-hover);
+}
+:host([data-variant='filled']) .tx-button__el:active:not(:disabled) {
+  background-color: var(--tx-color-accent-active);
+}
+
+:host([data-variant='tonal']) .tx-button__el {
+  color: var(--tx-color-accent);
+  background-color: var(--tx-color-accent-subtle);
+}
+:host([data-variant='tonal']) .tx-button__el:hover:not(:disabled) {
+  background-color: var(--tx-color-accent-muted);
+}
+
+:host([data-variant='outlined']) .tx-button__el {
+  color: var(--tx-color-on-surface);
+  background-color: transparent;
+  border-color: var(--tx-color-border-strong);
+}
+:host([data-variant='outlined']) .tx-button__el:hover:not(:disabled) {
+  background-color: var(--tx-color-hover);
+  border-color: var(--tx-color-on-surface-subtle);
+}
+
+:host([data-variant='text']) .tx-button__el {
+  color: var(--tx-color-accent);
+  background-color: transparent;
+  padding-inline: var(--tx-space-2);
+}
+:host([data-variant='text']) .tx-button__el:hover:not(:disabled) {
+  background-color: var(--tx-color-hover);
+}
+
+:host([data-variant='danger']) .tx-button__el {
+  /* Not hardcoded white: in dark the danger fill is a light red, where white
+     text falls to 2.56:1. --tx-color-on-status flips with the theme. */
+  color: var(--tx-color-on-status);
+  background-color: var(--tx-color-danger);
+}
+:host([data-variant='danger']) .tx-button__el:hover:not(:disabled) {
+  /* Derived, so hover darkens in light and lightens in dark rather than
+     jumping to a fixed ramp step and flipping the text contrast. */
+  background-color: color-mix(in srgb, var(--tx-color-danger) 85%, var(--tx-color-on-status));
+}
+
+/* --- content ---------------------------------------------------------- */
+
+.tx-button__label:empty {
+  display: none;
+}
+
+.tx-button__spinner {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: none;
+  border: 2px solid currentColor;
+  border-block-start-color: transparent;
+  border-radius: var(--tx-radius-full);
+  animation: tx-button-spin 700ms linear infinite;
+}
+
+@keyframes tx-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-button__spinner {
+    animation-duration: 2s;
+  }
+}

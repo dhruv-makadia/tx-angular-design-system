@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-lg);
+  overflow: hidden;
+}
+
+:host(.tx-accordion--flush) {
+  background: none;
+  border: 0;
+  border-radius: 0;
+}

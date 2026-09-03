@@ -1,0 +1,82 @@
+@if (filterable()) {
+  <div class="tx-tree__filter">
+    <input
+      type="text"
+      class="tx-tree__filter-input"
+      [attr.aria-label]="filterLabel"
+      [attr.placeholder]="filterLabel"
+      [value]="filterText()"
+      (input)="filterText.set($any($event.target).value)"
+    />
+  </div>
+}
+
+@if (visibleNodes().length === 0) {
+  <p class="tx-tree__empty" role="status">{{ emptyText() }}</p>
+} @else {
+  <ul
+    class="tx-tree__root"
+    ngTree
+    #tree="ngTree"
+    [value]="selected()"
+    (valueChange)="onSelected($any($event))"
+    [multi]="multi()"
+    [disabled]="disabled()"
+    [attr.aria-label]="label()"
+  >
+    <ng-template
+      [ngTemplateOutlet]="branch"
+      [ngTemplateOutletContext]="{ nodes: visibleNodes(), parent: tree }"
+    />
+  </ul>
+}
+
+<ng-template #branch let-nodes="nodes" let-parent="parent">
+  @for (node of nodes; track node.value) {
+    <li
+      class="tx-tree__item"
+      ngTreeItem
+      #item="ngTreeItem"
+      [parent]="parent"
+      [value]="node.value"
+      [label]="node.label"
+      [disabled]="!!node.disabled"
+      [expanded]="isExpanded(node)"
+      (expandedChange)="onExpandedChange(node, $event)"
+    >
+      <span class="tx-tree__row">
+        @if (hasChildren(node)) {
+          <tx-icon
+            class="tx-tree__twisty"
+            [class.tx-tree__twisty--open]="isExpanded(node)"
+            name="chevron-right"
+            size="sm"
+          />
+        } @else {
+          <span class="tx-tree__twisty tx-tree__twisty--leaf" aria-hidden="true"></span>
+        }
+
+        @if (node.icon) {
+          <tx-icon class="tx-tree__icon" [name]="node.icon" size="sm" />
+        }
+
+        <span class="tx-tree__label">{{ node.label }}</span>
+
+        @if (node.badge !== undefined) {
+          <span class="tx-tree__badge">{{ node.badge }}</span>
+        }
+      </span>
+
+      @if (node.children?.length) {
+        <ul class="tx-tree__group" role="group">
+          <ng-template ngTreeItemGroup [ownedBy]="item" #group="ngTreeItemGroup">
+            <ng-template
+              [ngTemplateOutlet]="branch"
+              [ngTemplateOutletContext]="{ nodes: node.children, parent: group }"
+            />
+          </ng-template>
+        </ul>
+      }
+    </li>
+  }
+</ng-template>

@@ -1,0 +1,5 @@
+@if (hasLabel()) {
+  <span class="<%= selector %>__label">{{ label() }}</span>
+}
+
+<ng-content />

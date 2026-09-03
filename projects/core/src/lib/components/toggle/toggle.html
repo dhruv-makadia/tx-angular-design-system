@@ -1,0 +1,24 @@
+<label class="tx-toggle__row" [class.tx-toggle__row--reverse]="!labelFirst()" [attr.for]="id">
+  <span class="tx-toggle__text">
+    <span class="tx-toggle__label">{{ label() }}<ng-content /></span>
+    @if (hint()) {
+      <span class="tx-toggle__hint" [id]="id + '-hint'">{{ hint() }}</span>
+    }
+  </span>
+
+  <span class="tx-toggle__control">
+    <input
+      class="tx-toggle__native"
+      type="checkbox"
+      role="switch"
+      [id]="id"
+      [checked]="checked()"
+      [disabled]="isDisabled()"
+      [attr.aria-describedby]="hint() ? id + '-hint' : null"
+      (change)="toggle($event)"
+    />
+    <span class="tx-toggle__track" aria-hidden="true">
+      <span class="tx-toggle__thumb"></span>
+    </span>
+  </span>
+</label>

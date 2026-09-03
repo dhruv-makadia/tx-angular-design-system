@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NG_CLI_ANALYTICS: 'false'
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # esbuild needs its postinstall to fetch the platform binary; npm 11 gates
+      # lifecycle scripts by default.
+      - name: Allow build scripts
+        run: npm approve-scripts esbuild || true
+
+      - name: Build library and schematics
+        run: npm run build:lib
+
+      - name: Component tests
+        run: npm run test:lib
+
+      - name: Schematic tests
+        run: npm run test:schematics
+
+      - name: Build showcase
+        run: npx ng build showcase
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: dist/core
+          retention-days: 7
+
+  fresh-app-install:
+    name: ng add into a fresh app
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Allow build scripts
+        run: npm approve-scripts esbuild || true
+
+      - name: Build and pack
+        run: |
+          npm run build:lib
+          cd dist/core
+          npm pack
+          mv ./*.tgz "$GITHUB_WORKSPACE/tx-core.tgz"
+
+      # Unit tests cannot catch a broken peer range, a bad exports map, or the
+      # CommonJS-inside-an-ESM-package trap. Only a real install does.
+      - name: Create a fresh Angular app
+        run: |
+          cd "$RUNNER_TEMP"
+          npx -y @angular/cli@22 new consumer \
+            --style=css --ssr=false --skip-git --package-manager=npm --defaults
+
+      - name: Install the tarball and run ng add
+        run: |
+          cd "$RUNNER_TEMP/consumer"
+          npm install "$GITHUB_WORKSPACE/tx-core.tgz"
+          npm approve-scripts esbuild || true
+          npx ng g @tx-angular-design-system/core:ng-add \
+            --skip-install --brand-color="#0d47a1" --dark-mode=both --typography=bundled
+          npm install
+          npm approve-scripts esbuild || true
+
+      - name: Assert the schematic wired things up
+        run: |
+          cd "$RUNNER_TEMP/consumer"
+          grep -q "core/styles/theme.css" src/styles.css
+          grep -q "tailwindcss" src/styles.css
+          grep -q "tx-color-accent: #0d47a1" src/styles/_tx-overrides.css
+          test -f .postcssrc.json
+
+      - name: Re-run ng add — must be idempotent
+        run: |
+          cd "$RUNNER_TEMP/consumer"
+          npx ng g @tx-angular-design-system/core:ng-add --skip-install
+          test "$(grep -c 'core/styles/theme.css' src/styles.css)" = "1"
+
+      - name: Build the consumer app
+        run: |
+          cd "$RUNNER_TEMP/consumer"
+          npx ng build
+
+  bundle-budget:
+    name: Package size budget
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm approve-scripts esbuild || true
+      - run: npm run build:lib
+
+      # The bundled fonts are ~108 KB of this, and they are the point — but a
+      # sudden jump should be a conversation, not a surprise on publish.
+      - name: Check packed size
+        run: |
+          cd dist/core
+          npm pack
+          size=$(stat -c%s ./*.tgz)
+          limit=$((400 * 1024))
+          echo "packed: $((size / 1024)) KB (limit $((limit / 1024)) KB)"
+          if [ "$size" -gt "$limit" ]; then
+            echo "::error::Package exceeds the size budget."
+            exit 1
+          fi

@@ -1,0 +1,63 @@
+/*
+ * Shared form-field shell.
+ *
+ * Included via styleUrls by every control that has a label, a bordered control
+ * area and a hint/error line, so they cannot drift apart. Angular scopes these
+ * rules per component, so there is no global leakage.
+ */
+
+.tx-field__label {
+  display: block;
+  margin-block-end: var(--tx-space-1);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-medium);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-field__required {
+  color: var(--tx-color-danger);
+  margin-inline-start: 2px;
+}
+
+.tx-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border-strong);
+  border-radius: var(--tx-radius-md);
+  transition: border-color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-field__control:hover:not(:has(:disabled)) {
+  border-color: var(--tx-color-on-surface-subtle);
+}
+
+/* The ring is drawn on the wrapper so it encloses prefixes and suffixes too. */
+.tx-field__control:has(:focus-visible) {
+  border-color: var(--tx-color-focus);
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+.tx-field__desc {
+  margin: var(--tx-space-1) 0 0;
+  font-size: var(--tx-text-xs);
+  line-height: var(--tx-leading-xs);
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-field__desc--error {
+  color: var(--tx-color-danger);
+}
+
+.tx-field__affix {
+  display: flex;
+  align-items: center;
+  flex: none;
+  padding-inline: var(--tx-space-2);
+  color: var(--tx-color-on-surface-muted);
+}

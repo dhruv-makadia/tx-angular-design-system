@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  border-block-end: var(--tx-border-width) solid var(--tx-color-border);
+}
+
+:host(:last-of-type) {
+  border-block-end: 0;
+}
+
+.tx-accordion-panel__heading {
+  margin: 0;
+  font: inherit;
+}
+
+.tx-accordion-panel__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-3);
+  width: 100%;
+  min-height: var(--tx-density-control-height);
+  padding: var(--tx-space-3) var(--tx-space-4);
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: background-color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-accordion-panel__trigger:hover:not(:disabled) {
+  background-color: var(--tx-color-hover);
+}
+
+.tx-accordion-panel__trigger:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: -2px;
+}
+
+.tx-accordion-panel__trigger:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-accordion-panel__icon {
+  flex: none;
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-accordion-panel__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tx-accordion-panel__label {
+  font-weight: var(--tx-weight-semibold);
+}
+
+.tx-accordion-panel__hint {
+  font-size: var(--tx-text-xs);
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-accordion-panel__chevron {
+  flex: none;
+  color: var(--tx-color-on-surface-muted);
+  transition: transform var(--tx-duration-md) var(--tx-ease-standard);
+}
+
+:host(.tx-accordion-panel--expanded) .tx-accordion-panel__chevron {
+  transform: rotate(180deg);
+}
+
+:host(.tx-accordion-panel--expanded) .tx-accordion-panel__label {
+  color: var(--tx-color-on-surface);
+}
+
+/*
+ * Aria marks a collapsed panel `inert`, which takes it out of interaction and
+ * the accessibility tree — but it does NOT hide it, so the body has to be
+ * collapsed here or every section stays on screen at once.
+ *
+ * Animating grid-template-rows from 0fr to 1fr collapses content of unknown
+ * height without measuring it. Where the animation is unsupported the rows still
+ * resolve, so the panel snaps shut instead of sliding — it always closes.
+ */
+.tx-accordion-panel__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--tx-duration-md) var(--tx-ease-standard);
+}
+
+.tx-accordion-panel__body:not([inert]) {
+  grid-template-rows: 1fr;
+}
+
+.tx-accordion-panel__content {
+  /* Both required for the 0fr track to actually clip the content. */
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 var(--tx-space-4) var(--tx-space-4);
+  color: var(--tx-color-on-surface-muted);
+}
+
+/* No padding while closed, or the collapsed panel keeps a sliver of height. */
+.tx-accordion-panel__body[inert] .tx-accordion-panel__content {
+  padding-block: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-accordion-panel__body {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-accordion-panel__chevron {
+    transition: none;
+  }
+}

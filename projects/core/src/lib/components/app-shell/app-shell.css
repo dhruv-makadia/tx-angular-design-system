@@ -1,0 +1,62 @@
+:host {
+  --tx-app-shell-breakpoint: 48rem;
+
+  display: flex;
+  min-height: 100dvh;
+  background-color: var(--tx-color-canvas);
+  color: var(--tx-color-on-surface);
+  font-family: var(--tx-font-sans);
+}
+
+.tx-app-shell__sidebar {
+  flex: none;
+  position: sticky;
+  inset-block-start: 0;
+  height: 100dvh;
+}
+
+.tx-app-shell__sidebar:not(:has(*)) {
+  display: none;
+}
+
+.tx-app-shell__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tx-app-shell__content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  margin-inline: auto;
+  padding: var(--tx-space-6);
+}
+
+/* Narrow: the sidebar leaves the flow and slides in over the content. */
+@media (max-width: 48rem) {
+  .tx-app-shell__sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: var(--tx-z-overlay);
+    transform: translateX(-100%);
+    transition: transform var(--tx-duration-md) var(--tx-ease-standard);
+    box-shadow: var(--tx-elevation-3);
+  }
+
+  :host(.tx-app-shell--drawer-open) .tx-app-shell__sidebar {
+    transform: translateX(0);
+  }
+
+  .tx-app-shell__content {
+    padding: var(--tx-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-app-shell__sidebar {
+    transition: none;
+  }
+}

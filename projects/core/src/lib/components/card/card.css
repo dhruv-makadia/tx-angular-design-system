@@ -1,0 +1,98 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid transparent;
+  border-radius: var(--tx-radius-lg);
+  overflow: hidden;
+}
+
+:host([data-variant='outlined']) {
+  border-color: var(--tx-color-border);
+}
+
+:host([data-variant='elevated']) {
+  box-shadow: var(--tx-elevation-2);
+}
+
+:host([data-variant='filled']) {
+  background-color: var(--tx-color-surface-variant);
+}
+
+/*
+ * Each region collapses when nothing is projected into it, so a card with only
+ * body content has no stray padding. :has() is why the browser floor is what
+ * it is — see DECISIONS.md D7.
+ */
+.tx-card__header,
+.tx-card__media,
+.tx-card__actions {
+  display: none;
+}
+
+.tx-card__header:has(*:not(:empty)),
+.tx-card__media:has(*),
+.tx-card__actions:has(*) {
+  display: flex;
+}
+
+.tx-card__header {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--tx-space-3);
+  padding: var(--tx-space-4) var(--tx-space-5) 0;
+}
+
+.tx-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tx-card__title {
+  margin: 0;
+  font-family: var(--tx-font-display);
+  font-size: var(--tx-text-lg);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-tight);
+}
+
+.tx-card__title:empty {
+  display: none;
+}
+
+.tx-card__subtitle {
+  margin: 0;
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-card__subtitle:empty {
+  display: none;
+}
+
+.tx-card__media img,
+.tx-card__media video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tx-card__content {
+  padding: var(--tx-space-4) var(--tx-space-5);
+}
+
+.tx-card__content--flush {
+  padding: 0;
+}
+
+.tx-card__actions {
+  align-items: center;
+  gap: var(--tx-space-2);
+  flex-wrap: wrap;
+  padding: 0 var(--tx-space-5) var(--tx-space-4);
+}

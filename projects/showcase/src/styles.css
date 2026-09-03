@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+/* The design system: fonts, tokens, Material bridge, base. */
+@import '../../core/styles/theme.css';
+/* Maps our tokens into Tailwind utilities. Uses @theme inline — see the file. */
+@import '../../core/styles/tailwind.css';
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background-color: var(--tx-color-canvas);
+  color: var(--tx-color-on-surface);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  line-height: var(--tx-leading-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,40 @@
+<label class="tx-checkbox__row" [attr.for]="id">
+  <span class="tx-checkbox__control">
+    <input
+      class="tx-checkbox__native"
+      type="checkbox"
+      [id]="id"
+      [checked]="checked()"
+      [indeterminate]="indeterminate()"
+      [disabled]="isDisabled()"
+      [attr.required]="required() || null"
+      [attr.aria-checked]="ariaChecked()"
+      [attr.aria-invalid]="invalid() || null"
+      [attr.aria-describedby]="hint() ? id + '-hint' : null"
+      (change)="toggle($event)"
+    />
+    <span class="tx-checkbox__box" aria-hidden="true">
+      @if (indeterminate()) {
+        <svg viewBox="0 0 16 16" focusable="false">
+          <path d="M4 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+        </svg>
+      } @else if (checked()) {
+        <svg viewBox="0 0 16 16" focusable="false">
+          <path d="M3.5 8.5l3 3l6-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </svg>
+      }
+    </span>
+  </span>
+
+  <span class="tx-checkbox__text">
+    <span class="tx-checkbox__label">
+      {{ label() }}<ng-content />
+      @if (required()) {
+        <span class="tx-checkbox__required" aria-hidden="true">*</span>
+      }
+    </span>
+    @if (hint()) {
+      <span class="tx-checkbox__hint" [id]="id + '-hint'">{{ hint() }}</span>
+    }
+  </span>
+</label>

@@ -1,0 +1,46 @@
+@if (count() === 0) {
+  <p class="tx-reorder-list__empty" role="status">{{ emptyText() }}</p>
+} @else {
+  <ul
+    class="tx-reorder-list__list"
+    cdkDropList
+    [cdkDropListDisabled]="disabled()"
+    (cdkDropListDropped)="onDrop($event)"
+    [attr.aria-label]="label()"
+  >
+    @for (item of items(); track trackBy()(item, $index); let i = $index) {
+      <li
+        class="tx-reorder-list__item"
+        [class.tx-reorder-list__item--locked]="lockedOf()(item)"
+        cdkDrag
+        [cdkDragDisabled]="disabled() || lockedOf()(item)"
+      >
+        <div class="tx-reorder-list__placeholder" *cdkDragPlaceholder></div>
+
+        <button
+          #handle
+          type="button"
+          class="tx-reorder-list__handle"
+          cdkDragHandle
+          [disabled]="disabled() || lockedOf()(item)"
+          [attr.aria-label]="dragLabel + ': ' + labelOf()(item) + ', ' + (i + 1) + ' of ' + count()"
+          (keydown)="onHandleKeydown($event, i)"
+        >
+          <tx-icon name="menu" size="sm" />
+        </button>
+
+        <span class="tx-reorder-list__text">
+          <span class="tx-reorder-list__label">{{ labelOf()(item) }}</span>
+          @if (hintOf()(item); as hint) {
+            <span class="tx-reorder-list__hint">{{ hint }}</span>
+          }
+        </span>
+
+        <span class="tx-reorder-list__position">{{ i + 1 }}</span>
+      </li>
+    }
+  </ul>
+}
+
+<!-- Dragging gives assistive technology nothing; keyboard moves are announced here. -->
+<p class="tx-reorder-list__live" aria-live="polite">{{ announcement() }}</p>

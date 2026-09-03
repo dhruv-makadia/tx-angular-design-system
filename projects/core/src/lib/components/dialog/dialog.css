@@ -1,0 +1,83 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+.tx-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--tx-space-3);
+  padding: var(--tx-space-5) var(--tx-space-5) 0;
+}
+
+.tx-dialog__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tx-dialog__title {
+  margin: 0;
+  font-family: var(--tx-font-display);
+  font-size: var(--tx-text-xl);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-tight);
+  text-wrap: balance;
+}
+
+.tx-dialog__subtitle {
+  margin: 0;
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-dialog__close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  padding: 0;
+  color: var(--tx-color-on-surface-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-md);
+  cursor: pointer;
+}
+
+.tx-dialog__close:hover {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+}
+
+.tx-dialog__close:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+/* Long bodies scroll while the header and actions stay put. */
+.tx-dialog__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--tx-space-4) var(--tx-space-5);
+}
+
+.tx-dialog__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--tx-space-2);
+  flex-wrap: wrap;
+  padding: 0 var(--tx-space-5) var(--tx-space-5);
+}
+
+.tx-dialog__actions:not(:has(*)) {
+  display: none;
+}

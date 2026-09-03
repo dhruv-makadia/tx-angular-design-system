@@ -1,0 +1,138 @@
+/*!
+ * @tx-angular-design-system/core — complete theme
+ *
+ * This is the "everything" entry point: the CDK's structural overlay styles,
+ * fonts, tokens and global base styles. Import it once in your global
+ * stylesheet.
+ *
+ *   @import "@tx-angular-design-system/core/styles/theme.css";
+ *
+ * If you only want the token values, import tokens.css instead.
+ *
+ * Override anything AFTER this import:
+ *
+ *   :root {
+ *     --tx-color-primary-700: #0d47a1;
+ *     --tx-font-sans: "Inter", system-ui, sans-serif;
+ *   }
+ */
+
+@import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/a11y-prebuilt.css';
+@import './fonts.css';
+@import './tokens.css';
+
+/* ==================================================================== *
+ * GLOBAL BASE
+ *
+ * Deliberately minimal. We set the page ground and the type defaults and
+ * nothing else — a design system that resets the consumer's whole
+ * document is a design system people fight.
+ * ==================================================================== */
+
+.tx-app,
+body.tx-app {
+  background-color: var(--tx-color-canvas);
+  color: var(--tx-color-on-surface);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  line-height: var(--tx-leading-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* One consistent focus indicator across every component. Clears 3:1
+ * against both the surface and the canvas in both themes. */
+.tx-focus-ring,
+[class^='tx-'] :focus-visible,
+[class*=' tx-'] :focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------- *
+ * OVERLAY SURFACES
+ *
+ * The CDK renders dialogs and toasts into an overlay container outside the
+ * component tree, so these two classes cannot be scoped to a component and
+ * have to live here.
+ * --------------------------------------------------------------------- */
+
+.tx-dialog__scrim {
+  background-color: var(--tx-color-overlay);
+}
+
+.tx-dialog__panel {
+  display: flex;
+  max-height: calc(100dvh - 4rem);
+  background-color: var(--tx-color-surface-raised);
+  border-radius: var(--tx-radius-xl);
+  box-shadow: var(--tx-elevation-4);
+  overflow: hidden;
+}
+
+.tx-toast__panel {
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------- *
+ * SELECTION AND SCROLLBARS
+ *
+ * The two things browsers style themselves — a blue selection highlight and a
+ * grey scrollbar — and the two that make an otherwise themed app look
+ * unthemed. Both are global by necessity: ::selection and the scrollbar
+ * pseudo-elements cannot be reached from component-scoped styles.
+ *
+ * Opt out by redeclaring the tokens, or by resetting these rules after the
+ * import if the host app wants the platform defaults back.
+ * --------------------------------------------------------------------- */
+
+::selection {
+  background-color: var(--tx-color-selection);
+  color: var(--tx-color-on-selection);
+}
+
+/* Firefox. `scrollbar-color` is inherited so the root declaration is enough,
+   but `scrollbar-width` is not — every scroll container needs its own. */
+:root {
+  scrollbar-color: var(--tx-scrollbar-thumb) var(--tx-scrollbar-track);
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+/* WebKit and Blink need the pseudo-elements, which do not inherit. */
+*::-webkit-scrollbar {
+  width: var(--tx-scrollbar-size);
+  height: var(--tx-scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background-color: var(--tx-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--tx-scrollbar-thumb);
+  border: 2px solid transparent;
+  /* Padding drawn as transparent border, so the thumb reads as a slim pill
+     rather than filling the gutter edge to edge. */
+  background-clip: content-box;
+  border-radius: var(--tx-radius-full);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--tx-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tx-duration-fast: 0ms;
+    --tx-duration-md: 0ms;
+    --tx-duration-slow: 0ms;
+  }
+}

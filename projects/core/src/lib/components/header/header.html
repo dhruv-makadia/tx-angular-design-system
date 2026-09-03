@@ -1,0 +1,22 @@
+<div class="tx-header__lead">
+  @if (showMenu()) {
+    <button
+      type="button"
+      class="tx-header__menu"
+      [attr.aria-label]="menuLabel()"
+      (click)="menuToggle.emit()"
+    >
+      <tx-icon name="menu" size="md" />
+    </button>
+  }
+
+  <div class="tx-header__brand"><ng-content select="[slot=brand]" /></div>
+
+  @if (heading()) {
+    <h1 class="tx-header__heading">{{ heading() }}</h1>
+  }
+</div>
+
+<div class="tx-header__middle"><ng-content select="[slot=middle]" /></div>
+
+<div class="tx-header__actions"><ng-content select="[slot=actions]" /></div>

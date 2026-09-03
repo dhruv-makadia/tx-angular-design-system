@@ -1,0 +1,142 @@
+@if (label()) {
+  <label class="tx-field__label" [attr.for]="id + '-trigger'">
+    {{ label() }}
+    @if (required()) {
+      <span class="tx-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="tx-field__control" #control cdkOverlayOrigin #origin="cdkOverlayOrigin">
+  <button
+    #trigger
+    type="button"
+    class="tx-multi-select__trigger"
+    role="combobox"
+    [id]="id + '-trigger'"
+    [attr.aria-expanded]="expanded()"
+    [attr.aria-controls]="expanded() ? id + '-panel' : null"
+    [attr.aria-describedby]="hint() || error() ? id + '-desc' : null"
+    [attr.aria-required]="required() || null"
+    [attr.aria-invalid]="invalid() || null"
+    aria-haspopup="listbox"
+    [disabled]="isDisabled()"
+    (click)="toggle()"
+    (keydown)="onTriggerKeydown($event)"
+  >
+    @if (selectedOptions().length === 0) {
+      <span class="tx-multi-select__placeholder">{{ placeholder() }}</span>
+    } @else {
+      <span class="tx-multi-select__chips">
+        @for (option of visibleChips(); track option.value) {
+          <span class="tx-chip">
+            <span class="tx-chip__label">{{ option.label }}</span>
+            @if (!isDisabled() && !readonly()) {
+              <span
+                class="tx-chip__remove"
+                role="button"
+                tabindex="-1"
+                [attr.aria-label]="'Remove ' + option.label"
+                (click)="removeChip(option, $event)"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                </svg>
+              </span>
+            }
+          </span>
+        }
+        @if (overflowCount() > 0) {
+          <span class="tx-chip tx-chip--overflow">{{ overflowLabel() }}</span>
+        }
+      </span>
+    }
+  </button>
+
+  <svg class="tx-multi-select__arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </svg>
+</div>
+
+@if (hint() || error()) {
+  <p class="tx-field__desc" [class.tx-field__desc--error]="invalid() && error()" [id]="id + '-desc'">
+    {{ invalid() && error() ? error() : hint() }}
+  </p>
+}
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="expanded()"
+  [cdkConnectedOverlayMatchWidth]="matchTriggerWidth"
+  [cdkConnectedOverlayViewportMargin]="8"
+  [cdkConnectedOverlayOffsetY]="4"
+  (overlayOutsideClick)="onOutsideClick($event)"
+  (detach)="close(false)"
+>
+  <div class="tx-multi-select__panel" [id]="id + '-panel'" (keydown)="onPanelKeydown($event)">
+    @if (showFilter()) {
+      <div class="tx-multi-select__filter">
+        <input
+          #filter
+          type="text"
+          class="tx-multi-select__filter-input"
+          [attr.aria-label]="filterLabel"
+          [value]="filterText()"
+          (input)="filterText.set($any($event.target).value)"
+          (keydown.arrowdown)="focusList($event)"
+        />
+      </div>
+    }
+
+    @if (selectAll() && !loading() && options().length > 0) {
+      <button type="button" class="tx-multi-select__all" (click)="toggleAll()">
+        {{ allSelected() ? clearAllLabel : selectAllLabel }}
+      </button>
+    }
+
+    @if (loading()) {
+      <p class="tx-multi-select__status" role="status">{{ loadingLabel }}</p>
+    } @else if (filtered().length === 0) {
+      <p class="tx-multi-select__status" role="status">{{ emptyText() }}</p>
+    } @else {
+      <ul
+        #listbox
+        class="tx-multi-select__list"
+        ngListbox
+        [value]="value()"
+        (valueChange)="onListboxValue($any($event))"
+        [multi]="true"
+        selectionMode="explicit"
+        [attr.aria-label]="label() || placeholder()"
+      >
+        @for (group of groups(); track group.name) {
+          @if (group.name) {
+            <li class="tx-multi-select__group" role="presentation">{{ group.name }}</li>
+          }
+          @for (option of group.options; track option.value) {
+            <li
+              class="tx-multi-select__option"
+              ngOption
+              [value]="option.value"
+              [label]="option.label"
+              [disabled]="!!option.disabled"
+            >
+              <span class="tx-multi-select__check" aria-hidden="true">
+                <svg viewBox="0 0 16 16" focusable="false">
+                  <path d="M3.5 8.5l3 3l6-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                </svg>
+              </span>
+              <span class="tx-multi-select__option-text">
+                <span class="tx-multi-select__option-label">{{ option.label }}</span>
+                @if (option.hint) {
+                  <span class="tx-multi-select__option-hint">{{ option.hint }}</span>
+                }
+              </span>
+            </li>
+          }
+        }
+      </ul>
+    }
+  </div>
+</ng-template>

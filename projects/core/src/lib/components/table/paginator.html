@@ -1,0 +1,90 @@
+@if (pageSizeOptions().length > 1) {
+  <div class="tx-paginator__size">
+    <span class="tx-paginator__size-label" [id]="'tx-paginator-size'">{{ sizeLabel }}</span>
+    <tx-select
+      class="tx-paginator__size-select"
+      [options]="sizeChoices()"
+      [value]="page().pageSize"
+      (valueChange)="onPageSize($any($event))"
+      [ariaLabel]="sizeLabel"
+      [filterable]="false"
+    />
+  </div>
+}
+
+@if (showRange()) {
+  <p class="tx-paginator__range" aria-live="polite">{{ rangeLabel() }}</p>
+}
+
+<nav class="tx-paginator__nav" [attr.aria-label]="navLabel">
+  <button
+    type="button"
+    class="tx-paginator__btn"
+    [attr.aria-label]="firstLabel"
+    [disabled]="isFirst()"
+    (click)="goto(0)"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M10.5 3.5L6 8l4.5 4.5M4.5 3.5v9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
+
+  <button
+    type="button"
+    class="tx-paginator__btn"
+    [attr.aria-label]="prevLabel"
+    [disabled]="isFirst()"
+    (click)="goto(page().pageIndex - 1)"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M10 3.5L5.5 8l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
+
+  @if (showPageInput()) {
+    <span class="tx-paginator__position">
+      <input
+        class="tx-paginator__page-input"
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        [attr.aria-label]="pageLabel"
+        [value]="pageFieldValue()"
+        [size]="1"
+        (input)="onPageInput($any($event.target).value)"
+        (keydown)="onPageKeydown($event)"
+        (blur)="commitPage()"
+      />
+      <span class="tx-paginator__sep" aria-hidden="true">/</span>
+      <span class="tx-paginator__total">{{ pageCount() }}</span>
+    </span>
+  } @else {
+    <span class="tx-paginator__position">
+      {{ page().pageIndex + 1 }}<span class="tx-paginator__sep">/</span>{{ pageCount() }}
+    </span>
+  }
+
+  <button
+    type="button"
+    class="tx-paginator__btn"
+    [attr.aria-label]="nextLabel"
+    [disabled]="isLast()"
+    (click)="goto(page().pageIndex + 1)"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M6 3.5L10.5 8L6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
+
+  <button
+    type="button"
+    class="tx-paginator__btn"
+    [attr.aria-label]="lastLabel"
+    [disabled]="isLast()"
+    (click)="goto(pageCount() - 1)"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M5.5 3.5L10 8l-4.5 4.5M11.5 3.5v9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
+</nav>

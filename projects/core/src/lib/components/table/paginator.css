@@ -1,0 +1,134 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-4);
+  flex-wrap: wrap;
+  padding: var(--tx-space-2) var(--tx-space-3);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface-muted);
+}
+
+.tx-paginator__size {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+}
+
+.tx-paginator__size-label {
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-medium);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * Sizing a nested component through custom properties rather than by reaching
+ * into its internals: --tx-density-* inherits, so the select shrinks without
+ * this stylesheet needing to know anything about its markup.
+ */
+.tx-paginator__size-select {
+  --tx-density-control-height: 1.875rem;
+  --tx-density-control-padding-x: var(--tx-space-2);
+  width: 5.25rem;
+}
+
+.tx-paginator__range {
+  margin: 0;
+  margin-inline-start: auto;
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tx-paginator__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tx-space-1);
+}
+
+.tx-paginator__btn {
+  display: grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  padding: 0;
+  color: var(--tx-color-on-surface-muted);
+  background-color: transparent;
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-paginator__btn:hover:not(:disabled) {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+  border-color: var(--tx-color-border-strong);
+}
+
+.tx-paginator__btn:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+.tx-paginator__btn:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.tx-paginator__btn svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.tx-paginator__position {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding-inline: var(--tx-space-1);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface);
+  white-space: nowrap;
+}
+
+.tx-paginator__page-input {
+  /* Wide enough for four digits; the field is for jumping, not for prose. */
+  width: 3rem;
+  height: 1.875rem;
+  padding-inline: var(--tx-space-1);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border-strong);
+  border-radius: var(--tx-radius-sm);
+}
+
+.tx-paginator__page-input:hover {
+  border-color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-paginator__page-input:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+  border-color: var(--tx-color-focus);
+}
+
+.tx-paginator__sep {
+  padding-inline: 2px;
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-paginator__total {
+  color: var(--tx-color-on-surface-muted);
+}

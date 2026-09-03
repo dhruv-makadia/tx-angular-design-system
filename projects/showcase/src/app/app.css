@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  min-width: 0;
+}
+
+.brand__mark {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  border-radius: var(--tx-radius-sm);
+  background-color: var(--tx-color-accent);
+}
+
+.brand__name {
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-xs);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--tx-space-3);
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  background-color: var(--tx-color-surface-variant);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-md);
+}
+
+.segmented__btn {
+  padding: var(--tx-space-1) var(--tx-space-2);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-medium);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+}
+
+.segmented__btn:hover {
+  color: var(--tx-color-on-surface);
+}
+
+.segmented__btn--active {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-surface-raised);
+  box-shadow: var(--tx-elevation-1);
+  /* In dark the fill step between track and pill is deliberately small, so the
+     edge is what makes the active segment read. */
+  outline: var(--tx-border-width) solid var(--tx-color-border-strong);
+  outline-offset: -1px;
+}
+
+.segmented__btn:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 2px;
+}
+
+/* Density is applied to the page body only, so the chrome stays put while you
+   compare settings. */
+.density-scope {
+  display: block;
+}
+
+@media (max-width: 40rem) {
+  .segmented {
+    display: none;
+  }
+}
+
+/* --- theme toggle ------------------------------------------------------ *
+ * A two-state switch, not a menu. The previous chevron read as a dropdown,
+ * and a control that suggests a menu should open one.
+ * ---------------------------------------------------------------------- */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background-color: var(--tx-color-surface-variant);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-full);
+  cursor: pointer;
+}
+
+.theme-toggle__opt {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--tx-radius-full);
+  color: var(--tx-color-on-surface-subtle);
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.theme-toggle__opt--on {
+  color: var(--tx-color-on-accent);
+  background-color: var(--tx-color-accent);
+}
+
+.theme-toggle:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle__opt {
+    transition: none;
+  }
+}

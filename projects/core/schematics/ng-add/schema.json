@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "TxDesignSystemNgAdd",
+  "title": "Add @tx-angular-design-system/core",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Name of the project to add the design system to.",
+      "$default": { "$source": "projectName" }
+    },
+    "brandColor": {
+      "type": "string",
+      "description": "Hex seed for the primary colour. Leave blank to keep the default palette.",
+      "x-prompt": "Brand seed colour as hex (e.g. #3c7700), or blank to keep the default?"
+    },
+    "darkMode": {
+      "type": "string",
+      "description": "Which themes to wire up.",
+      "default": "both",
+      "enum": ["light", "dark", "both"],
+      "x-prompt": {
+        "message": "Which colour schemes should the app support?",
+        "type": "list",
+        "items": [
+          { "value": "both", "label": "Both, following the OS (recommended)" },
+          { "value": "light", "label": "Light only" },
+          { "value": "dark", "label": "Dark only" }
+        ]
+      }
+    },
+    "typography": {
+      "type": "string",
+      "description": "Typography preset.",
+      "default": "bundled",
+      "enum": ["bundled", "system"],
+      "x-prompt": {
+        "message": "Typography?",
+        "type": "list",
+        "items": [
+          { "value": "bundled", "label": "Bundled faces — IBM Plex Sans/Mono + Archivo, self-hosted (~108 KB)" },
+          { "value": "system", "label": "System fonts — no font payload" }
+        ]
+      }
+    },
+    "tailwind": {
+      "type": "boolean",
+      "description": "Set up Tailwind CSS v4 and map our tokens into it.",
+      "default": true,
+      "x-prompt": "Set up Tailwind CSS v4 and bridge it to the design tokens?"
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "description": "Skip installing dependencies.",
+      "default": false,
+      "visible": false
+    }
+  },
+  "required": []
+}

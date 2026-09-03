@@ -1,0 +1,10 @@
+<div class="tx-app-shell__sidebar">
+  <ng-content select="[slot=sidebar]" />
+</div>
+
+<div class="tx-app-shell__main">
+  <ng-content select="[slot=header]" />
+  <main class="tx-app-shell__content" [style.max-width]="maxWidth()">
+    <ng-content />
+  </main>
+</div>

@@ -1,0 +1,15 @@
+<div class="tx-card__header">
+  <div class="tx-card__heading">
+    <h3 class="tx-card__title"><ng-content select="[slot=title]" /></h3>
+    <p class="tx-card__subtitle"><ng-content select="[slot=subtitle]" /></p>
+  </div>
+  <div class="tx-card__header-actions"><ng-content select="[slot=header-actions]" /></div>
+</div>
+
+<div class="tx-card__media"><ng-content select="[slot=media]" /></div>
+
+<div class="tx-card__content" [class.tx-card__content--flush]="flush()">
+  <ng-content />
+</div>
+
+<div class="tx-card__actions"><ng-content select="[slot=actions]" /></div>

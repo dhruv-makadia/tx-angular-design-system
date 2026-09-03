@@ -1,0 +1,421 @@
+/*!
+ * @tx-angular-design-system/core — design tokens
+ *
+ * Direction: "Field Kit" with "Instrument" data treatment.
+ * Warm neutrals, soft geometry, green promoted to the primary action colour at
+ * its accessible depth; monospaced, letter-spaced uppercase labels and tabular
+ * figures for anything that reads as data.
+ *
+ * Every colour pairing below was verified against WCAG 2.2:
+ *   body text        >= 4.5:1
+ *   large text       >= 3.0:1
+ *   control borders  >= 3.0:1  (1.4.11 non-text contrast)
+ *   focus indicator  >= 3.0:1  against both surface and canvas
+ *
+ * PUBLIC API — the tokens in this file are semver-stable. Override any of them
+ * after importing to retheme the whole system. Anything prefixed --_tx is
+ * private and may change in a patch release.
+ */
+
+:root {
+  /* ---------------------------------------------------------------- *
+   * PRIMITIVES — colour ramps
+   * Generated in OKLCH so perceived lightness steps evenly.
+   * ---------------------------------------------------------------- */
+
+  /* Primary — TraXtion signal green, hue 133.8deg */
+  --tx-color-primary-50: #eafdde;
+  --tx-color-primary-100: #d4f7bf;
+  --tx-color-primary-200: #b6ec93;
+  --tx-color-primary-300: #98db69;
+  --tx-color-primary-400: #7ac43b;
+  --tx-color-primary-500: #63ad19;
+  --tx-color-primary-600: #4e9200;
+  --tx-color-primary-700: #3c7700;
+  --tx-color-primary-800: #306000;
+  --tx-color-primary-900: #254c00;
+
+  /* Neutral — warm, hue 85deg. Deliberately not a cool grey. */
+  --tx-color-neutral-50: #fcfaf6;
+  --tx-color-neutral-100: #f7f4ee;
+  --tx-color-neutral-200: #ede9e2;
+  --tx-color-neutral-300: #e0dbd1;
+  --tx-color-neutral-400: #c3bdb1;
+  --tx-color-neutral-500: #8f887c;
+  --tx-color-neutral-600: #6f695d;
+  --tx-color-neutral-700: #575247;
+  --tx-color-neutral-800: #3c382f;
+  --tx-color-neutral-900: #27231c;
+
+  /* Status ramps — only the steps we actually use */
+  --tx-color-danger-100: #fbeae8;
+  --tx-color-danger-400: #e08b83;
+  --tx-color-danger-600: #a8332a;
+  --tx-color-danger-700: #8d2a22;
+
+  --tx-color-warning-100: #fbf0d8;
+  --tx-color-warning-400: #d9a640;
+  --tx-color-warning-600: #9a6500;
+  --tx-color-warning-700: #7e5200;
+
+  --tx-color-info-100: #e4eef5;
+  --tx-color-info-400: #6fa8cd;
+  --tx-color-info-600: #2c6f9b;
+  --tx-color-info-700: #245f86;
+
+  /* ---------------------------------------------------------------- *
+   * SEMANTIC COLOUR — light theme
+   * Components reference only these, never the ramps above.
+   * ---------------------------------------------------------------- */
+  --tx-color-canvas: var(--tx-color-neutral-100);
+  --tx-color-surface: var(--tx-color-neutral-50);
+  --tx-color-surface-variant: var(--tx-color-neutral-200);
+  --tx-color-surface-raised: #ffffff;
+  --tx-color-surface-inverse: var(--tx-color-neutral-900);
+
+  --tx-color-on-surface: var(--tx-color-neutral-900);
+  --tx-color-on-surface-muted: var(--tx-color-neutral-700);
+  --tx-color-on-surface-subtle: var(--tx-color-neutral-600);
+  --tx-color-on-surface-inverse: var(--tx-color-neutral-50);
+
+  /* Two border tokens, not one. A hairline that merely separates content has
+   * no contrast floor; anything that bounds a control must clear 3:1. */
+  --tx-color-border: var(--tx-color-neutral-300);
+  --tx-color-border-strong: var(--tx-color-neutral-500);
+
+  /* Green carries white text only at 700 and below (5.48:1 on white).
+   *
+   * Every variant below is DERIVED from --tx-color-accent rather than pointing
+   * at a ramp step, so overriding that one token retheme hover, pressed,
+   * subtle fills and selection along with it. Pointing these at
+   * --tx-color-primary-* meant a consumer who reseeded the accent still got
+   * green hover states.
+   *
+   * --tx-color-on-accent cannot be derived: whether white or dark text reads on
+   * a fill depends on the fill's lightness. Set it alongside the accent when
+   * reseeding to something light. */
+  --tx-color-accent: var(--tx-color-primary-700);
+  --tx-color-accent-hover: color-mix(in srgb, var(--tx-color-accent) 85%, #000000);
+  --tx-color-accent-active: color-mix(in srgb, var(--tx-color-accent) 72%, #000000);
+  --tx-color-on-accent: #ffffff;
+  --tx-color-accent-subtle: color-mix(in srgb, var(--tx-color-accent) 10%, var(--tx-color-surface-raised));
+  --tx-color-accent-muted: color-mix(in srgb, var(--tx-color-accent) 24%, var(--tx-color-surface-raised));
+
+  --tx-color-focus: var(--tx-color-accent);
+
+  /* Text on a filled status colour. Cannot be derived — whether white or dark
+   * reads depends on the fill's lightness, which flips between themes. */
+  --tx-color-on-status: #ffffff;
+
+  --tx-color-success: var(--tx-color-primary-700);
+  --tx-color-success-surface: var(--tx-color-primary-50);
+  --tx-color-warning: var(--tx-color-warning-600);
+  --tx-color-warning-surface: var(--tx-color-warning-100);
+  --tx-color-danger: var(--tx-color-danger-600);
+  --tx-color-danger-surface: var(--tx-color-danger-100);
+  --tx-color-info: var(--tx-color-info-600);
+  --tx-color-info-surface: var(--tx-color-info-100);
+
+  /* Text selection and scrollbars. Browsers default these to their own blue
+   * and grey, which is the one place an otherwise themed app still looks
+   * unthemed. */
+  --tx-color-selection: color-mix(in srgb, var(--tx-color-accent) 26%, transparent);
+  --tx-color-on-selection: var(--tx-color-on-surface);
+  --tx-scrollbar-thumb: var(--tx-color-neutral-400);
+  --tx-scrollbar-thumb-hover: var(--tx-color-neutral-500);
+  --tx-scrollbar-track: transparent;
+  --tx-scrollbar-size: 0.625rem;
+
+  --tx-color-overlay: rgb(39 35 28 / 48%);
+  --tx-color-selected: color-mix(in srgb, var(--tx-color-accent) 10%, transparent);
+  --tx-color-hover: rgb(39 35 28 / 4%);
+  --tx-color-pressed: rgb(39 35 28 / 8%);
+  --tx-color-disabled-surface: var(--tx-color-neutral-200);
+  --tx-color-disabled-content: var(--tx-color-neutral-500);
+
+  /* ---------------------------------------------------------------- *
+   * TYPOGRAPHY
+   * ---------------------------------------------------------------- */
+  --tx-font-sans: 'TX Sans', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tx-font-display: 'TX Display', 'Archivo', 'TX Sans', system-ui, sans-serif;
+  --tx-font-mono: 'TX Mono', 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* Major third (1.250) from a 14px base. */
+  --tx-text-2xs: 0.6875rem; /* 11px */
+  --tx-text-xs: 0.75rem; /* 12px */
+  --tx-text-sm: 0.8125rem; /* 13px */
+  --tx-text-md: 0.875rem; /* 14px — base */
+  --tx-text-lg: 1.09375rem; /* 17.5px */
+  --tx-text-xl: 1.375rem; /* 22px */
+  --tx-text-2xl: 1.6875rem; /* 27px */
+  --tx-text-3xl: 2.125rem; /* 34px */
+  --tx-text-4xl: 2.6875rem; /* 43px */
+
+  --tx-leading-2xs: 1.45;
+  --tx-leading-xs: 1.45;
+  --tx-leading-sm: 1.5;
+  --tx-leading-md: 1.6;
+  --tx-leading-lg: 1.5;
+  --tx-leading-xl: 1.35;
+  --tx-leading-2xl: 1.25;
+  --tx-leading-3xl: 1.15;
+  --tx-leading-4xl: 1.05;
+
+  --tx-weight-regular: 400;
+  --tx-weight-medium: 500;
+  --tx-weight-semibold: 600;
+  --tx-weight-bold: 700;
+
+  --tx-tracking-tight: -0.014em;
+  --tx-tracking-normal: 0;
+  --tx-tracking-wide: 0.04em;
+  /* The "Instrument" data treatment: uppercase mono micro-labels. */
+  --tx-tracking-label: 0.13em;
+
+  /* ---------------------------------------------------------------- *
+   * SPACING — 4px base
+   * ---------------------------------------------------------------- */
+  --tx-space-0: 0;
+  --tx-space-1: 0.25rem; /* 4 */
+  --tx-space-2: 0.5rem; /* 8 */
+  --tx-space-3: 0.75rem; /* 12 */
+  --tx-space-4: 1rem; /* 16 */
+  --tx-space-5: 1.25rem; /* 20 */
+  --tx-space-6: 1.5rem; /* 24 */
+  --tx-space-7: 1.75rem; /* 28 */
+  --tx-space-8: 2rem; /* 32 */
+  --tx-space-10: 2.5rem; /* 40 */
+  --tx-space-12: 3rem; /* 48 */
+  --tx-space-16: 4rem; /* 64 */
+  --tx-space-20: 5rem; /* 80 */
+  --tx-space-24: 6rem; /* 96 */
+
+  /* ---------------------------------------------------------------- *
+   * RADIUS / BORDER / ELEVATION
+   * ---------------------------------------------------------------- */
+  --tx-radius-none: 0;
+  --tx-radius-sm: 0.25rem; /* 4 */
+  --tx-radius-md: 0.4375rem; /* 7 — controls */
+  --tx-radius-lg: 0.625rem; /* 10 — panels */
+  --tx-radius-xl: 0.875rem; /* 14 */
+  --tx-radius-full: 9999px;
+
+  --tx-border-width: 1px;
+  --tx-border-width-thick: 2px;
+
+  /* Two-layer soft shadows, warm-tinted to match the neutral ramp. */
+  --tx-elevation-0: none;
+  --tx-elevation-1: 0 1px 2px rgb(39 35 28 / 5%), 0 1px 3px rgb(39 35 28 / 4%);
+  --tx-elevation-2: 0 1px 2px rgb(39 35 28 / 5%), 0 8px 20px rgb(39 35 28 / 7%);
+  --tx-elevation-3: 0 2px 4px rgb(39 35 28 / 6%), 0 16px 32px rgb(39 35 28 / 10%);
+  --tx-elevation-4: 0 4px 8px rgb(39 35 28 / 8%), 0 28px 56px rgb(39 35 28 / 14%);
+
+  /* ---------------------------------------------------------------- *
+   * DENSITY — drives control heights and table rows
+   * Set --tx-density-* on any subtree to rescale it.
+   * ---------------------------------------------------------------- */
+  --tx-density-control-height: 2.5rem; /* 40 */
+  --tx-density-control-padding-x: var(--tx-space-3);
+  --tx-density-row-height: 2.75rem; /* 44 — standard */
+  --tx-density-cell-padding-y: var(--tx-space-3);
+  --tx-density-cell-padding-x: var(--tx-space-4);
+
+  /* ---------------------------------------------------------------- *
+   * MOTION
+   * ---------------------------------------------------------------- */
+  --tx-duration-instant: 0ms;
+  --tx-duration-fast: 120ms;
+  --tx-duration-md: 180ms;
+  --tx-duration-slow: 260ms;
+  --tx-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --tx-ease-decelerate: cubic-bezier(0, 0, 0, 1);
+  --tx-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+
+  /* ---------------------------------------------------------------- *
+   * Z-INDEX
+   * ---------------------------------------------------------------- */
+  --tx-z-base: 0;
+  --tx-z-raised: 10;
+  --tx-z-sticky: 100;
+  --tx-z-overlay: 1000;
+  --tx-z-popover: 1100;
+  --tx-z-toast: 1200;
+}
+
+/* -------------------------------------------------------------------- *
+ * DARK THEME
+ *
+ * Three states, because the viewer has three: an explicit choice stamps
+ * data-theme on the root, and the default "system" setting stamps nothing.
+ * Only the tokens are redefined — never component rules — so a subtree
+ * scope and the document scope behave identically.
+ * -------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --tx-color-canvas: #1a1710;
+    --tx-color-surface: #28241d;
+    /* Elevation ladder: canvas < surface < variant < raised < border <
+       disabled. Every neighbouring pair is separated enough to be told apart,
+       and every text/border token clears AA against all four surfaces. */
+    --tx-color-surface-variant: #312d26;
+    --tx-color-surface-raised: #3b372f;
+    --tx-color-surface-inverse: var(--tx-color-neutral-100);
+
+    --tx-color-on-surface: #efece8;
+    --tx-color-on-surface-muted: #b6b2aa;
+    --tx-color-on-surface-subtle: #a5a29a;
+    --tx-color-on-surface-inverse: var(--tx-color-neutral-900);
+
+    --tx-color-border: #4a463d;
+    --tx-color-border-strong: #868175;
+
+    /* On a dark ground the readable green moves up the ramp. */
+    --tx-color-accent: var(--tx-color-primary-400);
+    --tx-color-accent-hover: color-mix(in srgb, var(--tx-color-accent) 82%, #ffffff);
+    --tx-color-accent-active: color-mix(in srgb, var(--tx-color-accent) 68%, #ffffff);
+    --tx-color-on-accent: #1a1710;
+    --tx-color-accent-subtle: color-mix(in srgb, var(--tx-color-accent) 14%, transparent);
+    --tx-color-accent-muted: color-mix(in srgb, var(--tx-color-accent) 26%, transparent);
+
+    --tx-color-focus: var(--tx-color-accent);
+
+    /* Dark status colours are the light-on-dark ramp steps, so a filled
+       status button needs dark text: white on #e08b83 is 2.56:1. */
+    --tx-color-on-status: #1a1710;
+
+    /* Dark status colours are the light-on-dark ramp steps, so a filled
+     status button needs dark text: white on #e08b83 is 2.56:1. */
+  --tx-color-on-status: #1a1710;
+
+  --tx-color-success: var(--tx-color-primary-400);
+    --tx-color-success-surface: color-mix(in srgb, var(--tx-color-success) 16%, transparent);
+    --tx-color-warning: var(--tx-color-warning-400);
+    --tx-color-warning-surface: rgb(217 166 64 / 16%);
+    --tx-color-danger: var(--tx-color-danger-400);
+    --tx-color-danger-surface: rgb(224 139 131 / 16%);
+    --tx-color-info: var(--tx-color-info-400);
+    --tx-color-info-surface: rgb(111 168 205 / 16%);
+
+    --tx-color-selection: color-mix(in srgb, var(--tx-color-accent) 30%, transparent);
+    --tx-scrollbar-thumb: #57524a;
+    --tx-scrollbar-thumb-hover: #7a756b;
+
+    --tx-color-selection: color-mix(in srgb, var(--tx-color-accent) 30%, transparent);
+  --tx-scrollbar-thumb: #57524a;
+  --tx-scrollbar-thumb-hover: #7a756b;
+
+  --tx-color-overlay: rgb(0 0 0 / 62%);
+    --tx-color-selected: color-mix(in srgb, var(--tx-color-accent) 16%, transparent);
+    --tx-color-hover: rgb(255 255 255 / 5%);
+    --tx-color-pressed: rgb(255 255 255 / 9%);
+    /* Distinct from --tx-color-border (#413d34), or a disabled field's border
+       disappears into its own fill. */
+    --tx-color-disabled-surface: #5a554c;
+    --tx-color-disabled-content: #aaa79f;
+
+    --tx-elevation-1: 0 1px 2px rgb(0 0 0 / 40%), 0 1px 3px rgb(0 0 0 / 30%);
+    --tx-elevation-2: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 20px rgb(0 0 0 / 44%);
+    --tx-elevation-3: 0 2px 4px rgb(0 0 0 / 44%), 0 16px 32px rgb(0 0 0 / 52%);
+    --tx-elevation-4: 0 4px 8px rgb(0 0 0 / 48%), 0 28px 56px rgb(0 0 0 / 60%);
+  }
+}
+
+:root[data-theme='dark'],
+.tx-theme-dark {
+  --tx-color-canvas: #1a1710;
+  --tx-color-surface: #28241d;
+  /* Elevation ladder: canvas < surface < variant < raised < border <
+     disabled. Every neighbouring pair is separated enough to be told apart,
+     and every text/border token clears AA against all four surfaces. */
+  --tx-color-surface-variant: #312d26;
+  --tx-color-surface-raised: #3b372f;
+  --tx-color-surface-inverse: var(--tx-color-neutral-100);
+
+  --tx-color-on-surface: #efece8;
+  --tx-color-on-surface-muted: #b6b2aa;
+  --tx-color-on-surface-subtle: #a5a29a;
+  --tx-color-on-surface-inverse: var(--tx-color-neutral-900);
+
+  --tx-color-border: #4a463d;
+  --tx-color-border-strong: #868175;
+
+  --tx-color-accent: var(--tx-color-primary-400);
+  --tx-color-accent-hover: color-mix(in srgb, var(--tx-color-accent) 82%, #ffffff);
+  --tx-color-accent-active: color-mix(in srgb, var(--tx-color-accent) 68%, #ffffff);
+  --tx-color-on-accent: #1a1710;
+  --tx-color-accent-subtle: color-mix(in srgb, var(--tx-color-accent) 14%, transparent);
+  --tx-color-accent-muted: color-mix(in srgb, var(--tx-color-accent) 26%, transparent);
+
+  --tx-color-focus: var(--tx-color-accent);
+
+  /* Dark status colours are the light-on-dark ramp steps, so a filled
+     status button needs dark text: white on #e08b83 is 2.56:1. */
+  --tx-color-on-status: #1a1710;
+
+  --tx-color-success: var(--tx-color-primary-400);
+  --tx-color-success-surface: color-mix(in srgb, var(--tx-color-success) 16%, transparent);
+  --tx-color-warning: var(--tx-color-warning-400);
+  --tx-color-warning-surface: rgb(217 166 64 / 16%);
+  --tx-color-danger: var(--tx-color-danger-400);
+  --tx-color-danger-surface: rgb(224 139 131 / 16%);
+  --tx-color-info: var(--tx-color-info-400);
+  --tx-color-info-surface: rgb(111 168 205 / 16%);
+
+  --tx-color-selection: color-mix(in srgb, var(--tx-color-accent) 30%, transparent);
+  --tx-scrollbar-thumb: #57524a;
+  --tx-scrollbar-thumb-hover: #7a756b;
+
+  --tx-color-overlay: rgb(0 0 0 / 62%);
+  --tx-color-selected: color-mix(in srgb, var(--tx-color-accent) 16%, transparent);
+  --tx-color-hover: rgb(255 255 255 / 5%);
+  --tx-color-pressed: rgb(255 255 255 / 9%);
+  /* Distinct from --tx-color-border (#413d34), or a disabled field's border
+     disappears into its own fill. */
+  --tx-color-disabled-surface: #5a554c;
+  --tx-color-disabled-content: #aaa79f;
+
+  --tx-elevation-1: 0 1px 2px rgb(0 0 0 / 40%), 0 1px 3px rgb(0 0 0 / 30%);
+  --tx-elevation-2: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 20px rgb(0 0 0 / 44%);
+  --tx-elevation-3: 0 2px 4px rgb(0 0 0 / 44%), 0 16px 32px rgb(0 0 0 / 52%);
+  --tx-elevation-4: 0 4px 8px rgb(0 0 0 / 48%), 0 28px 56px rgb(0 0 0 / 60%);
+}
+
+/* A light scope that wins inside a dark document. */
+.tx-theme-light {
+  --tx-color-canvas: var(--tx-color-neutral-100);
+  --tx-color-surface: var(--tx-color-neutral-50);
+  --tx-color-surface-variant: var(--tx-color-neutral-200);
+  --tx-color-surface-raised: #ffffff;
+  --tx-color-on-surface: var(--tx-color-neutral-900);
+  --tx-color-on-surface-muted: var(--tx-color-neutral-700);
+  --tx-color-on-surface-subtle: var(--tx-color-neutral-600);
+  --tx-color-border: var(--tx-color-neutral-300);
+  --tx-color-border-strong: var(--tx-color-neutral-500);
+  --tx-color-accent: var(--tx-color-primary-700);
+  --tx-color-accent-hover: color-mix(in srgb, var(--tx-color-accent) 85%, #000000);
+  --tx-color-accent-active: color-mix(in srgb, var(--tx-color-accent) 72%, #000000);
+  --tx-color-on-accent: #ffffff;
+  --tx-color-accent-subtle: color-mix(in srgb, var(--tx-color-accent) 10%, var(--tx-color-surface-raised));
+  --tx-color-accent-muted: color-mix(in srgb, var(--tx-color-accent) 24%, var(--tx-color-surface-raised));
+  --tx-color-focus: var(--tx-color-accent);
+}
+
+/* -------------------------------------------------------------------- *
+ * DENSITY SCOPES
+ * -------------------------------------------------------------------- */
+.tx-density-compact {
+  --tx-density-control-height: 2rem; /* 32 */
+  --tx-density-control-padding-x: var(--tx-space-2);
+  --tx-density-row-height: 2.125rem; /* 34 */
+  --tx-density-cell-padding-y: var(--tx-space-2);
+  --tx-density-cell-padding-x: var(--tx-space-3);
+}
+
+.tx-density-comfortable {
+  --tx-density-control-height: 3rem; /* 48 */
+  --tx-density-control-padding-x: var(--tx-space-4);
+  --tx-density-row-height: 3.25rem; /* 52 */
+  --tx-density-cell-padding-y: var(--tx-space-4);
+  --tx-density-cell-padding-x: var(--tx-space-5);
+}

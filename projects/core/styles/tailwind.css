@@ -1,0 +1,113 @@
+/*!
+ * @tx-angular-design-system/core — Tailwind CSS v4 bridge (optional)
+ *
+ * Maps our tokens into Tailwind's theme so `bg-accent`, `text-on-surface`,
+ * `p-4`, `text-lg` and `rounded-md` all resolve to the same custom properties
+ * the components use.
+ *
+ * This file is for the CONSUMING APP. Library components are authored in plain
+ * CSS against the tokens and never emit Tailwind classes, so you do not need
+ * an @source directive pointing at node_modules — and nothing we ship can be
+ * purged out of your production build.
+ *
+ *   @import "tailwindcss";
+ *   @import "@tx-angular-design-system/core/styles/theme.css";
+ *   @import "@tx-angular-design-system/core/styles/tailwind.css";
+ *
+ * NOTE: `@theme inline` is required, not stylistic. Plain `@theme` would make
+ * Tailwind emit utilities referencing --color-accent, which CSS resolves where
+ * it is DEFINED (:root) rather than where it is USED. Subtree overrides such as
+ * .tx-theme-dark would then be ignored, and opacity modifiers like bg-accent/50
+ * would break. `inline` emits var(--tx-color-accent) directly, so both work.
+ */
+
+@theme inline {
+  /* colour ------------------------------------------------------------ */
+  --color-primary-50: var(--tx-color-primary-50);
+  --color-primary-100: var(--tx-color-primary-100);
+  --color-primary-200: var(--tx-color-primary-200);
+  --color-primary-300: var(--tx-color-primary-300);
+  --color-primary-400: var(--tx-color-primary-400);
+  --color-primary-500: var(--tx-color-primary-500);
+  --color-primary-600: var(--tx-color-primary-600);
+  --color-primary-700: var(--tx-color-primary-700);
+  --color-primary-800: var(--tx-color-primary-800);
+  --color-primary-900: var(--tx-color-primary-900);
+
+  --color-neutral-50: var(--tx-color-neutral-50);
+  --color-neutral-100: var(--tx-color-neutral-100);
+  --color-neutral-200: var(--tx-color-neutral-200);
+  --color-neutral-300: var(--tx-color-neutral-300);
+  --color-neutral-400: var(--tx-color-neutral-400);
+  --color-neutral-500: var(--tx-color-neutral-500);
+  --color-neutral-600: var(--tx-color-neutral-600);
+  --color-neutral-700: var(--tx-color-neutral-700);
+  --color-neutral-800: var(--tx-color-neutral-800);
+  --color-neutral-900: var(--tx-color-neutral-900);
+
+  --color-canvas: var(--tx-color-canvas);
+  --color-surface: var(--tx-color-surface);
+  --color-surface-variant: var(--tx-color-surface-variant);
+  --color-surface-raised: var(--tx-color-surface-raised);
+  --color-on-surface: var(--tx-color-on-surface);
+  --color-on-surface-muted: var(--tx-color-on-surface-muted);
+  --color-on-surface-subtle: var(--tx-color-on-surface-subtle);
+  --color-border: var(--tx-color-border);
+  --color-border-strong: var(--tx-color-border-strong);
+  --color-accent: var(--tx-color-accent);
+  --color-on-accent: var(--tx-color-on-accent);
+  --color-accent-subtle: var(--tx-color-accent-subtle);
+  --color-focus: var(--tx-color-focus);
+  --color-success: var(--tx-color-success);
+  --color-warning: var(--tx-color-warning);
+  --color-danger: var(--tx-color-danger);
+  --color-info: var(--tx-color-info);
+
+  /* type -------------------------------------------------------------- */
+  --font-sans: var(--tx-font-sans);
+  --font-display: var(--tx-font-display);
+  --font-mono: var(--tx-font-mono);
+
+  --text-2xs: var(--tx-text-2xs);
+  --text-xs: var(--tx-text-xs);
+  --text-sm: var(--tx-text-sm);
+  --text-md: var(--tx-text-md);
+  --text-lg: var(--tx-text-lg);
+  --text-xl: var(--tx-text-xl);
+  --text-2xl: var(--tx-text-2xl);
+  --text-3xl: var(--tx-text-3xl);
+  --text-4xl: var(--tx-text-4xl);
+
+  --tracking-label: var(--tx-tracking-label);
+
+  /* spacing ----------------------------------------------------------- */
+  --spacing-1: var(--tx-space-1);
+  --spacing-2: var(--tx-space-2);
+  --spacing-3: var(--tx-space-3);
+  --spacing-4: var(--tx-space-4);
+  --spacing-5: var(--tx-space-5);
+  --spacing-6: var(--tx-space-6);
+  --spacing-7: var(--tx-space-7);
+  --spacing-8: var(--tx-space-8);
+  --spacing-10: var(--tx-space-10);
+  --spacing-12: var(--tx-space-12);
+  --spacing-16: var(--tx-space-16);
+  --spacing-20: var(--tx-space-20);
+  --spacing-24: var(--tx-space-24);
+
+  /* radius / shadow / motion ------------------------------------------ */
+  --radius-sm: var(--tx-radius-sm);
+  --radius-md: var(--tx-radius-md);
+  --radius-lg: var(--tx-radius-lg);
+  --radius-xl: var(--tx-radius-xl);
+
+  --shadow-1: var(--tx-elevation-1);
+  --shadow-2: var(--tx-elevation-2);
+  --shadow-3: var(--tx-elevation-3);
+  --shadow-4: var(--tx-elevation-4);
+
+  --ease-standard: var(--tx-ease-standard);
+}
+
+/* Lets consumers write `tx-dark:bg-surface` for our subtree theme scope. */
+@custom-variant tx-dark (&:where(.tx-theme-dark, .tx-theme-dark *));
