@@ -10,7 +10,8 @@
     "build:schematics": "tsc -p projects/core/schematics/tsconfig.json && node tools/write-schematics-pkg.mjs",
     "build:lib": "ng build core && npm run build:schematics",
     "test:lib": "ng test core --watch=false",
-    "test:schematics": "npm run build:schematics && vitest run --config vitest.schematics.config.ts"
+    "test:schematics": "npm run build:schematics && vitest run --config vitest.schematics.config.ts",
+    "build:showcase": "npm run build:lib && ng build showcase"
   },
   "private": true,
   "packageManager": "npm@11.17.0",

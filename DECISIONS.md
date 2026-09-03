@@ -484,7 +484,69 @@ Two things this cost, worth remembering:
 
 ---
 
+## Pre-publish hardening
+
+### D43. The accent chain is derived; the accent itself is theme-scoped
+
+`--tx-color-accent-hover`, `-active`, `-subtle`, `-muted` and `--tx-color-selected` pointed at
+fixed ramp steps, and the dark ones were literal green `rgb()` values. Overriding
+`--tx-color-accent` therefore left green hover and tonal states on a red theme — the token
+system's headline promise did not hold. They now derive from the accent with `color-mix()`.
+
+The accent *itself* could not be made automatic. A single mix ratio against white either fails
+contrast for some hues (deep purple lands at 4.49:1 on dark cards even at 45%) or washes the brand
+out to pastel, and CSS has no function that adjusts a colour until it clears a threshold.
+Reseeding therefore means stating the accent twice — once per theme — which is what the shipped
+palette itself does (`primary-700` light, `primary-400` dark). Documented in KNOWN-ISSUES §1.
+
+### D44. Dark needed a real elevation ladder
+
+Three token pairs resolved to the same literal in dark: `surface-variant` = `surface-raised`
+(so an active segmented pill was invisible against its own track) and `border` =
+`disabled-surface` (so a disabled field's border vanished into its own fill).
+
+The dark surfaces were re-solved as an ascending ladder — canvas < surface < variant < raised <
+border < disabled — under 21 simultaneous constraints: every text token clears AA on all four
+surfaces, `border-strong` clears 3:1 on all four, and each neighbouring pair is separated enough
+to be told apart. Solved numerically in OKLCH rather than picked by eye.
+
+### D45. Filled status buttons need a theme-flipped text colour
+
+The danger button hardcoded `color: #ffffff`. In dark the danger fill is a *light* red, where
+white text is 2.56:1. Added `--tx-color-on-status`, white in light and near-black in dark, and
+derived the hover with `color-mix()` so it darkens in light and lightens in dark rather than
+jumping to a fixed ramp step and flipping the text contrast again.
+
+### D46. The theme editor writes to the active theme's scope
+
+Overrides were applied as inline styles on `:root`, which beats `:root[data-theme='dark']`. Two
+consequences: a preset that set surfaces made dark mode unreadable, and **editing any token while
+in dark mode silently did nothing**.
+
+The editor now emits a real stylesheet with `:root { }` and `:root[data-theme='dark'] { }` blocks,
+and routes each edit to whichever theme is on screen. That is also the shape a consuming app must
+write, so the editor teaches the correct pattern instead of a shortcut that breaks on theme
+switch. The generated CSS is shown on the page.
+
+### D47. Contrast is audited by walking the rendered pages
+
+Token-level contrast checks miss what actually composes on screen. A Puppeteer script walks all 12
+showcase pages × 3 brand presets × both themes, resolves each text node's real background by
+climbing for the first opaque ancestor, and computes contrast against the WCAG threshold for its
+size and weight.
+
+It separates *inactive* controls, which §1.4.3 exempts, from real failures — and it must, because
+a disabled radio's `disabled` attribute sits on a sibling `<input>`, so `closest('[disabled]')`
+alone misclassifies the label as a failure.
+
+Result: **0 non-exempt failures in either theme**. Two real bugs were found this way that no unit
+test would have caught: the danger button (D45) and the active sidebar badge at 3.89:1, now a
+solid accent pill at 5.5:1 or better for every seed tested.
+
+---
+
 ## Open
+
 
 
 

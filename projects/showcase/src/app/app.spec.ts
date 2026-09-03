@@ -68,11 +68,17 @@ describe('Showcase shell', () => {
     const theme = TestBed.inject(ThemeService);
     expect(theme.mode()).toBe('light');
 
-    fixture.nativeElement.querySelector('.tx-header__actions tx-button .tx-button__el').click();
+    const toggle: HTMLButtonElement = fixture.nativeElement.querySelector('.theme-toggle');
+    // A two-state switch, not a menu button.
+    expect(toggle.getAttribute('role')).toBe('switch');
+    expect(toggle.getAttribute('aria-checked')).toBe('false');
+
+    toggle.click();
     fixture.detectChanges();
 
     expect(theme.mode()).toBe('dark');
     expect(document.documentElement.dataset['theme']).toBe('dark');
+    expect(toggle.getAttribute('aria-checked')).toBe('true');
   });
 
   it('redirects an unknown route to the overview', async () => {

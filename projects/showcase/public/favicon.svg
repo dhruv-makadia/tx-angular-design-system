@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="TX">
+  <!--
+    Letterforms are drawn as paths, not <text>: a favicon renders in browser
+    chrome where the page's fonts are not available, so text would fall back to
+    whatever the OS supplies and shift between platforms.
+
+    Solid brand fill with white letters reads on both light and dark tab bars,
+    so no prefers-color-scheme variant is needed.
+  -->
+  <rect width="32" height="32" rx="7" fill="#3c7700" />
+  <g
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="3.2"
+    stroke-linecap="butt"
+    stroke-linejoin="miter"
+  >
+    <!-- T. Butt caps, so the crossbar ends exactly where stated and cannot
+         grow into the X the way square caps did. -->
+    <path d="M4.8 10.7H15.0" />
+    <path d="M9.9 10.7V22.3" />
+    <!-- X -->
+    <path d="M19.2 10.7L27.9 22.3" />
+    <path d="M27.9 10.7L19.2 22.3" />
+  </g>
+</svg>

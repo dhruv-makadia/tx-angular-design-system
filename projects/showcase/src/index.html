@@ -2,10 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Showcase</title>
+    <title>tx/core — Angular design system</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="An Angular 22 design system: accessible, signal-based, token-themed components built on Angular Aria and the CDK."
+    />
+
+    <!--
+      SVG first: it is the crispest at any size and browsers that understand it
+      prefer it. The .ico carries 16/32/48 raster copies for the ones that do
+      not, and must stay named favicon.ico for bare-domain requests.
+    -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+    <!-- Paints the browser UI to match the shipped canvas in each theme. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f4ee" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1710" />
   </head>
   <body>
     <app-root></app-root>

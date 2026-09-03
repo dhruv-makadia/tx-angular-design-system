@@ -127,7 +127,16 @@ utility follows:
 
 :root {
   --tx-color-accent: #0d47a1;
+  --tx-color-on-accent: #ffffff;
   --tx-font-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* The accent is theme-scoped: a colour that reads on white will not read on
+   near-black, so dark needs a lighter step of the same hue. */
+:root[data-theme='dark'],
+.tx-theme-dark {
+  --tx-color-accent: #82a3d8;
+  --tx-color-on-accent: #10202e;
 }
 ```
 
@@ -188,6 +197,38 @@ page that builds a complete working screen from library components only.
 npx ng serve showcase
 ```
 
+## Deploying the showcase
+
+### Vercel
+
+`vercel.json` at the repo root already sets these, so importing the repo needs no dashboard
+changes. If you configure it by hand instead:
+
+| Setting | Value |
+| --- | --- |
+| Framework Preset | **Other** |
+| Install Command | `npm ci` |
+| Build Command | `npm run build:showcase` |
+| Output Directory | `dist/showcase/browser` |
+| Root Directory | *(leave as the repo root)* |
+| Node.js Version | 22.x or 24.x |
+
+`build:showcase` builds the library first — the showcase imports
+`@tx-angular-design-system/core` through a `paths` mapping onto `dist/core`, so `ng build showcase`
+alone fails on a clean checkout.
+
+`vercel.json` also rewrites unmatched paths to `index.html`, which the client-side router needs;
+without it a refresh on `/theming` returns 404. Static files are matched before rewrites, so the
+favicons and hashed bundles are unaffected.
+
+Leave `<base href="/">` alone — it is already correct for a domain root. Only GitHub Pages needs
+`--base-href /<repo>/`, which the Pages workflow passes separately.
+
+### GitHub Pages
+
+`.github/workflows/deploy-showcase.yml` handles it on push to `main`: it sets the base href to the
+repo name and copies `index.html` to `404.html`, since Pages has no SPA fallback.
+
 ## Development
 
 ```bash
@@ -205,6 +246,8 @@ ng generate @tx-angular-design-system/core:component status-pill
 ```
 
 Architecture decisions and their rationale are recorded in [DECISIONS.md](DECISIONS.md).
+Gaps, trade-offs and sharp edges are listed in [KNOWN-ISSUES.md](KNOWN-ISSUES.md) — read it before
+adopting.
 
 ## Requirements
 

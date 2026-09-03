@@ -67,13 +67,18 @@ const PRESETS: readonly {
       eyebrow="Foundations"
       heading="Theming"
       lede="Change a value on the left and watch every component follow. Nothing here is
-            simulated — the editor writes custom properties onto the document root, exactly as a
-            consuming app would."
+            simulated — the editor emits a real stylesheet, scoped per theme, exactly as a
+            consuming app would write it."
     >
       <div class="editor">
         <aside class="editor__panel" aria-label="Theme editor">
           <div class="editor__head">
-            <h2>Tokens</h2>
+            <div>
+              <h2>Tokens</h2>
+              <p class="editor__scope">
+                Editing the <strong>{{ theme.mode() }}</strong> theme
+              </p>
+            </div>
             <tx-button variant="text" size="sm" (activated)="theme.resetOverrides()">Reset</tx-button>
           </div>
 
@@ -207,6 +212,14 @@ const PRESETS: readonly {
         align-items: center;
         justify-content: space-between;
         margin-block-end: var(--tx-space-3);
+      }
+      .editor__scope {
+        margin: 2px 0 0;
+        font-family: var(--tx-font-mono);
+        font-size: var(--tx-text-2xs);
+        letter-spacing: var(--tx-tracking-label);
+        text-transform: uppercase;
+        color: var(--tx-color-on-surface-muted);
       }
       .editor__head h2 {
         margin: 0;
@@ -386,12 +399,35 @@ export class ThemingPage {
     return match ? match.name : null;
   });
 
+  /**
+   * Values shown in the editor, for whichever theme is active.
+   *
+   * Falls back to the token's *computed* value rather than a hardcoded initial,
+   * so the fields show the real shipped value in dark as well as light.
+   */
+  protected readonly fieldValues = computed<Record<string, string>>(() => {
+    const map = this.theme.mode() === 'dark' ? this.theme.darkOverrides() : this.theme.overrides();
+    const root = getComputedStyle(document.documentElement);
+    const out: Record<string, string> = {};
+    for (const token of this.tokens) {
+      out[token.name] = map[token.name] || root.getPropertyValue(token.name).trim() || token.initial;
+    }
+    return out;
+  });
+
   protected valueOf(name: string, fallback: string): string {
-    return this.theme.overrides()[name] || fallback;
+    return this.fieldValues()[name] || fallback;
   }
 
+  /**
+   * Edits land in the scope of the theme currently on screen.
+   *
+   * Writing everything to `:root` meant an edit made in dark mode silently did
+   * nothing: `:root[data-theme='dark']` is more specific and kept winning.
+   */
   protected set(name: string, value: string): void {
-    this.theme.setOverride(name, value);
+    if (this.theme.mode() === 'dark') this.theme.setDarkOverride(name, value);
+    else this.theme.setOverride(name, value);
   }
 
   protected applyPreset(name: string): void {

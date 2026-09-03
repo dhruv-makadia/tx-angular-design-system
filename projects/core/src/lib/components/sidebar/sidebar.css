@@ -213,9 +213,14 @@
   border-radius: var(--tx-radius-full);
 }
 
+/*
+ * A solid pill, not accent-on-tint. Accent text on --tx-color-accent-muted is
+ * 3.89:1 for the shipped palette and worse in dark; on-accent over the accent
+ * itself is 5.5:1 or better for every brand seed tested.
+ */
 .tx-sidebar__link--active .tx-sidebar__badge {
-  color: var(--tx-color-accent);
-  background-color: var(--tx-color-accent-muted);
+  color: var(--tx-color-on-accent);
+  background-color: var(--tx-color-accent);
 }
 
 .tx-sidebar__chevron {
