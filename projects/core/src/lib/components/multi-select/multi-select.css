@@ -47,6 +47,7 @@
 }
 
 .tx-multi-select__chips {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   gap: var(--tx-space-1);
@@ -103,10 +104,12 @@
 }
 
 .tx-multi-select__arrow {
+  /* Pushes to the trailing edge whether the trigger holds chips or just the
+     placeholder, without needing flex:1 on each of them. */
+  margin-inline-start: auto;
   width: 1rem;
   height: 1rem;
   flex: none;
-  margin-inline-end: var(--tx-space-2);
   color: var(--tx-color-on-surface-muted);
   pointer-events: none;
   transition: transform var(--tx-duration-fast) var(--tx-ease-standard);

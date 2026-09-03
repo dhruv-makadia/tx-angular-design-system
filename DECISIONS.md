@@ -543,9 +543,28 @@ Result: **0 non-exempt failures in either theme**. Two real bugs were found this
 test would have caught: the danger button (D45) and the active sidebar badge at 3.89:1, now a
 solid accent pill at 5.5:1 or better for every seed tested.
 
+### D48. The select chevron belongs inside the trigger
+
+The chevron was a sibling of the trigger button with `pointer-events: none`, so a click on it fell
+through to the wrapper `div`, which has no handler: **clicking the chevron did nothing, and only
+the text area opened the panel**. Both selects had it, and so did every select derived from them —
+including the paginator's page-size control.
+
+The chevron now lives inside the trigger, where it is part of the button's hit area and
+`pointer-events: none` simply forwards the click to the button. That leaves no room in the flow for
+the clear button, which is now positioned over the trigger and spaced clear of the chevron; the
+value reserves that column so a long label ellipsises rather than running underneath.
+
+`margin-inline-start: auto` pushes the multi-select's chevron to the trailing edge whether the
+trigger holds chips or only a placeholder — flex growth on the value alone did not cover both.
+
+Two regression tests assert the structural fact rather than the symptom: the chevron resolves to
+`.closest('.tx-select__trigger')`, and the clear button does not.
+
 ---
 
 ## Open
+
 
 
 

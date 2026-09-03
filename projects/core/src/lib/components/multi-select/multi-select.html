@@ -51,11 +51,12 @@
         }
       </span>
     }
-  </button>
 
-  <svg class="tx-multi-select__arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-    <path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-  </svg>
+    <!-- Inside the trigger so the chevron is part of its hit area. -->
+    <svg class="tx-multi-select__arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
 </div>
 
 @if (hint() || error()) {

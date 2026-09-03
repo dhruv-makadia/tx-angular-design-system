@@ -81,6 +81,34 @@ describe('TxSelect', () => {
     expect(options().length).toBe(4);
   });
 
+  it('opens when the chevron is clicked, not just the value area', () => {
+    const arrow: SVGElement = fixture.nativeElement.querySelector('.tx-select__arrow');
+
+    // The chevron must live INSIDE the trigger. As a sibling it sat over the
+    // wrapper div and, being pointer-events:none, sent the click through to an
+    // element with no handler — so clicking it did nothing.
+    expect(arrow.closest('.tx-select__trigger')).not.toBeNull();
+
+    trigger().click();
+    fixture.detectChanges();
+    expect(panel()).not.toBeNull();
+  });
+
+  it('keeps the clear control outside the trigger so it can act on its own', () => {
+    fixture.componentInstance.value.set('ar');
+    fixture.detectChanges();
+
+    const clear: HTMLButtonElement = fixture.nativeElement.querySelector('.tx-select__clear');
+    expect(clear.closest('.tx-select__trigger')).toBeNull();
+
+    clear.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.value()).toBeNull();
+    // Clearing must not also open the panel.
+    expect(panel()).toBeNull();
+  });
+
   it('opens on ArrowDown from the trigger', () => {
     trigger().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
     fixture.detectChanges();

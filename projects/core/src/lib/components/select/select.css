@@ -45,6 +45,8 @@
 }
 
 .tx-select__value {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -54,11 +56,18 @@
   color: var(--tx-color-on-surface-subtle);
 }
 
+.tx-select__trigger--clearable .tx-select__value {
+  /* Reserve the clear button's column so a long label ellipsises before it
+     rather than running underneath. */
+  padding-inline-end: 2.25rem;
+}
+
 .tx-select__arrow {
   width: 1rem;
   height: 1rem;
   flex: none;
-  margin-inline-end: var(--tx-space-2);
+  /* No trailing margin: the trigger's padding-inline already supplies the gap,
+     and stacking the two put the chevron 8px further in than the label. */
   color: var(--tx-color-on-surface-muted);
   pointer-events: none;
   transition: transform var(--tx-duration-fast) var(--tx-ease-standard);
@@ -68,12 +77,20 @@
   transform: rotate(180deg);
 }
 
+/*
+ * Positioned over the trigger rather than beside it. The trigger now spans the
+ * whole control so the chevron is clickable, which leaves no room in the flow
+ * for a sibling; --clearable reserves the space so the value cannot slide
+ * underneath.
+ */
 .tx-select__clear {
+  position: absolute;
+  /* Just inside the chevron, which ends at the trigger's trailing padding. */
+  inset-inline-end: 2rem;
   display: grid;
   place-items: center;
   width: 1.25rem;
   height: 1.25rem;
-  flex: none;
   padding: 0;
   color: var(--tx-color-on-surface-muted);
   background: none;

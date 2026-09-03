@@ -137,6 +137,11 @@ export class TxSelect<V> implements ControlValueAccessor {
 
   protected readonly isDisabled = computed(() => this.disabled() || this.cvaDisabled());
 
+  /** The clear affordance only appears once there is something to clear. */
+  protected readonly showClear = computed(
+    () => this.clearable() && !!this.selected() && !this.isDisabled() && !this.readonly(),
+  );
+
   protected readonly showFilter = computed(() => {
     const mode = this.filterable();
     return mode === 'auto' ? this.options().length >= this.config.filterThreshold : mode;

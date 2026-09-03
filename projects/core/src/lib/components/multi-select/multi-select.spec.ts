@@ -58,6 +58,14 @@ describe('TxMultiSelect', () => {
     expect(document.querySelectorAll('.tx-multi-select__group').length).toBe(2);
   });
 
+  it('opens when the chevron is clicked', () => {
+    const arrow: SVGElement = fixture.nativeElement.querySelector('.tx-multi-select__arrow');
+    expect(arrow.closest('.tx-multi-select__trigger')).not.toBeNull();
+
+    open();
+    expect(document.querySelector('.tx-multi-select__panel')).not.toBeNull();
+  });
+
   it('keeps the panel open while selecting several options', () => {
     open();
     options()[0].click();
