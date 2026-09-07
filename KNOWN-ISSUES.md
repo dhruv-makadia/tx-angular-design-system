@@ -118,17 +118,19 @@ client-side table of tens of thousands of rows will be slow.
 ## 6. Tree is missing selection and drag features
 
 Shipped: nested nodes, lazy children via `hasChildren`, filtering that keeps a match's ancestors
-and descendants, single and multi select, keyboard navigation from Angular Aria.
+and descendants, single and multi select, a non-collapsible mode, keyboard navigation from Angular
+Aria.
 
 **Not built:**
 
 - Checkbox selection with tri-state parents
 - Drag to reorder or reparent
 - Inline per-node actions
-- Expand-all / collapse-all
+- Expand-all / collapse-all as an API (`[collapsible]="false"` is expand-all-and-stay)
 
-Filtering also force-expands matches and does **not** write that back to your `expanded` model —
-deliberate, so clearing the filter restores the user's own expansion state.
+Filtering and `[collapsible]="false"` both force branches open and neither writes that back to your
+`expanded` model — deliberate, so clearing the filter, or turning collapsing back on, restores the
+user's own expansion state.
 
 ---
 

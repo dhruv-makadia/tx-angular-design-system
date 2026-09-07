@@ -42,18 +42,25 @@
       [label]="node.label"
       [disabled]="!!node.disabled"
       [expanded]="isExpanded(node)"
-      (expandedChange)="onExpandedChange(node, $event)"
+      (expandedChange)="onExpandedChange(node, $event, item)"
     >
       <span class="tx-tree__row">
-        @if (hasChildren(node)) {
-          <tx-icon
-            class="tx-tree__twisty"
-            [class.tx-tree__twisty--open]="isExpanded(node)"
-            name="chevron-right"
-            size="sm"
-          />
-        } @else {
-          <span class="tx-tree__twisty tx-tree__twisty--leaf" aria-hidden="true"></span>
+        <!--
+          The twisty column goes entirely when nothing can be collapsed: an
+          empty gutter on every row is dead space, and with no chevrons at all
+          the rows still line up.
+        -->
+        @if (collapsible()) {
+          @if (hasChildren(node)) {
+            <tx-icon
+              class="tx-tree__twisty"
+              [class.tx-tree__twisty--open]="isExpanded(node)"
+              name="chevron-right"
+              size="sm"
+            />
+          } @else {
+            <span class="tx-tree__twisty tx-tree__twisty--leaf" aria-hidden="true"></span>
+          }
         }
 
         @if (node.icon) {

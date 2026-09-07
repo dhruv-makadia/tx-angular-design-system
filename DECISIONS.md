@@ -639,6 +639,60 @@ opt-in rather than automatic. Its hairline is a pseudo-element, not a border: wi
 with a sticky cell. `position: sticky` is itself a containing block, so an absolutely positioned
 `::before` keeps the rule logical instead of forcing a physical `box-shadow`.
 
+### D52. An icon is a path, so the API takes a path
+
+`provideTxIcons` and `TxIconRegistry.register` demanded `{ paths: ['…'] }` for what is, in the
+overwhelming majority of cases, one `d` string. They now take `TxIconInput`:
+
+```ts
+provideTxIcons({
+  rocket: 'M12 2c3 3 4 7 4 10l-4 4-4-4c0-3 1-7 4-10z',   // one path
+  crosshair: ['M12 3v18', 'M3 12h18'],                    // several
+  seal: { paths: ['…'], viewBox: '0 0 16 16', stroked: false },
+});
+```
+
+`txIconDefinition()` normalises the three onto one shape and is exported, so a consumer building
+their own registration layer does not have to reimplement the widening.
+
+`tx-icon` also gained `path`, `viewBox` and `filled`, which draw geometry with nothing registered at
+all. `path` wins over `name`. It is the escape hatch, not the habit — a registered icon has a name,
+can be swapped in one place, and turns up in `registry.names()` — and the showcase says so next to
+the demo. `name` stopped being `input.required` as a consequence.
+
+`filled` is the inverse of the definition's `stroked`, which is two spellings for one idea. It is
+deliberate: `<tx-icon path="…" filled />` reads as an attribute where `[stroked]="false"` does not,
+and the input has to win over a registered definition anyway, so it could not simply reuse the name.
+
+Neither route touches `innerHTML`. A `d` string is bound with `[attr.d]`, so a registered or inline
+icon still cannot carry script — the property that made the geometry-not-markup decision worth
+making in the first place.
+
+### D53. A tree that cannot be closed, and the Aria model bug it exposed
+
+`[collapsible]="false"` holds every branch open: no twisties, nothing for `←` to close, and
+`expanded` ignored. It is for hierarchies where the shape *is* the content — an outline, a bill of
+materials, a table of contents — and hiding part of it hides the point. The twisty column is dropped
+entirely rather than filled with spacers: with no chevrons anywhere, rows still line up, and an
+empty gutter on every row is dead space.
+
+The test for it found a **pre-existing bug in the filtering path**. Aria's `TreeItem.expanded` is a
+`ModelSignal`, so clicking a parent writes `false` into Aria's own signal and emits
+`expandedChange`. The component ignored the event — but a one-way `[expanded]="isExpanded(node)"`
+binding only re-writes when the bound *expression* changes, and it never did. So the branch closed
+on screen while the model stayed untouched: exactly the same class of defect as the select's
+`selectionMode` default in D14. Ignoring the event was never enough; it has to be re-asserted:
+
+```ts
+if (this.forcedOpen()) {
+  if (!isOpen) item.expanded.set(true);
+  return;
+}
+```
+
+Both paths now share `forcedOpen()`, and both have a regression test that clicks a parent and
+asserts `aria-expanded` — the rendered fact — rather than the model, which was already correct.
+
 ---
 
 ## Open

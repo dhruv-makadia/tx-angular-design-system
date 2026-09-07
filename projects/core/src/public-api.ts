@@ -35,7 +35,9 @@ export { TxIcon, type TxIconSize } from './lib/components/icon/icon';
 export {
   TxIconRegistry,
   provideTxIcons,
+  txIconDefinition,
   type TxIconDefinition,
+  type TxIconInput,
 } from './lib/components/icon/icon-registry';
 export { TxCard, type TxCardVariant } from './lib/components/card/card';
 

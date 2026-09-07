@@ -63,11 +63,56 @@ import { ApiRow, DemoApi, DemoExample, DemoGuidance, DemoKeys, DemoPage } from '
         </ul>
       </demo-example>
 
-      <demo-example heading="Registering icons" [code]="registerCode" column>
+      <demo-example
+        heading="Registering your own"
+        note="Give it a path and use the name. The full definition is only for solid glyphs or a different grid."
+        [code]="registerCode"
+        column
+      >
+        <ul class="icons">
+          @for (name of customNames; track name) {
+            <li>
+              <tx-icon [name]="name" size="md" />
+              <code>{{ name }}</code>
+            </li>
+          }
+        </ul>
         <p class="prose">
           Icons are stored as path geometry, never markup, so nothing passes through
           <code>innerHTML</code> — a registered icon cannot carry script. An unknown name renders
-          nothing rather than throwing.
+          nothing rather than throwing. Register a name that already exists and yours replaces it,
+          which is how you swap a built-in for your own drawing.
+        </p>
+      </demo-example>
+
+      <demo-example
+        heading="A one-off, without registering anything"
+        note="path draws geometry directly and wins over name."
+        [code]="inlineCode"
+        column
+      >
+        <ul class="icons">
+          <li>
+            <tx-icon [path]="starPath" size="md" />
+            <code>path</code>
+          </li>
+          <li>
+            <tx-icon [path]="starPath" size="md" filled />
+            <code>filled</code>
+          </li>
+          <li>
+            <tx-icon [path]="crossPaths" size="md" />
+            <code>path[]</code>
+          </li>
+          <li>
+            <tx-icon [path]="tinyPath" viewBox="0 0 16 16" size="md" />
+            <code>viewBox</code>
+          </li>
+        </ul>
+        <p class="prose">
+          This is the escape hatch, not the habit. An icon used on more than one screen belongs in
+          <code>provideTxIcons</code>, where it has a name, can be swapped in one place, and turns up
+          in <code>registry.names()</code> — which is what draws both galleries above.
         </p>
       </demo-example>
 
@@ -121,7 +166,14 @@ export class ButtonsPage {
   private readonly registry = inject(TxIconRegistry);
 
   protected readonly saving = signal(false);
-  protected readonly iconNames = this.registry.names();
+  /** The set the library ships. */
+  protected readonly iconNames = this.registry.names().filter((n) => !n.startsWith('demo-'));
+  /** Registered by this showcase's own providers — see app.config.ts. */
+  protected readonly customNames = this.registry.names().filter((n) => n.startsWith('demo-'));
+
+  protected readonly starPath = 'M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z';
+  protected readonly crossPaths = ['M4 4l16 16', 'M20 4L4 20'];
+  protected readonly tinyPath = 'M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z';
 
   protected save(): void {
     this.saving.set(true);
@@ -153,10 +205,27 @@ export class ButtonsPage {
 bootstrapApplication(App, {
   providers: [
     provideTxIcons({
-      rocket: { paths: ['M12 2c3 3 4 7 4 10l-4 4-4-4c0-3 1-7 4-10z'] },
+      // One path — the common case.
+      rocket: 'M12 2c3 3 4 7 4 10l-4 4-4-4c0-3 1-7 4-10z',
+      // Several, when the glyph needs them.
+      crosshair: ['M12 3v18', 'M3 12h18', 'M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'],
+      // The long form, for a solid glyph or a different grid.
+      seal: { paths: ['M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z'], viewBox: '0 0 16 16', stroked: false },
+      // A name that already exists replaces the built-in.
+      check: 'M4 12l5 5L20 6',
     }),
   ],
-});`;
+});
+
+<tx-icon name="rocket" />`;
+
+  protected readonly inlineCode = `<!-- One path, nothing registered -->
+<tx-icon path="M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z" />
+
+<!-- Several, a solid glyph, or a different grid -->
+<tx-icon [path]="['M4 4l16 16', 'M20 4L4 20']" />
+<tx-icon [path]="star" filled />
+<tx-icon [path]="mark" viewBox="0 0 16 16" />`;
 
   protected readonly buttonApi: readonly ApiRow[] = [
     { name: 'variant', type: "'filled' | 'tonal' | 'outlined' | 'text' | 'danger'", def: "'filled'", description: 'Visual weight. One filled button per region is usually enough.' },
@@ -170,7 +239,10 @@ bootstrapApplication(App, {
   ];
 
   protected readonly iconApi: readonly ApiRow[] = [
-    { name: 'name', type: 'string', description: 'Registered icon name. Unknown names render nothing.' },
+    { name: 'name', type: 'string', def: "''", description: 'Registered icon name. Unknown names render nothing rather than throwing.' },
+    { name: 'path', type: 'string | readonly string[] | TxIconDefinition', def: "''", description: 'Geometry drawn directly, without registering anything. Wins over name.' },
+    { name: 'viewBox', type: 'string', def: "''", description: "Overrides the icon's own grid. Defaults to the 24-unit one." },
+    { name: 'filled', type: 'boolean', def: 'false', description: 'Solid glyph rather than a stroked one — the inverse of the definition’s stroked.' },
     { name: 'size', type: "'sm' | 'md' | 'lg'", def: "'md'", description: '16, 20 or 24 px.' },
     { name: 'label', type: 'string', def: "''", description: 'Accessible name. Omit for decorative icons — they are aria-hidden by default.' },
   ];

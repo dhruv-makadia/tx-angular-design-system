@@ -158,6 +158,123 @@ describe('TxTree', () => {
   });
 });
 
+@Component({
+  standalone: true,
+  imports: [TxTree],
+  template: `
+    <tx-tree
+      [nodes]="nodes"
+      [(expanded)]="expanded"
+      [collapsible]="collapsible()"
+      label="Outline"
+    />
+  `,
+})
+class StaticHost {
+  readonly nodes = NODES;
+  readonly expanded = signal<string[]>([]);
+  readonly collapsible = signal(false);
+}
+
+describe('TxTree without collapsing', () => {
+  let fixture: ComponentFixture<StaticHost>;
+
+  const items = (): HTMLElement[] =>
+    Array.from(fixture.nativeElement.querySelectorAll('.tx-tree__item'));
+  const labels = (): string[] =>
+    Array.from(fixture.nativeElement.querySelectorAll('.tx-tree__label')).map((n) =>
+      (n as HTMLElement).textContent!.trim(),
+    );
+  const byLabel = (text: string): HTMLElement =>
+    items().find((i) => i.querySelector('.tx-tree__label')!.textContent!.trim() === text)!;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({ imports: [StaticHost] }).compileComponents();
+    fixture = TestBed.createComponent(StaticHost);
+    fixture.detectChanges();
+  });
+
+  it('shows every descendant without anything being expanded', () => {
+    // `expanded` is empty, yet the whole hierarchy is on screen.
+    expect(fixture.componentInstance.expanded()).toEqual([]);
+    expect(labels()).toContain('Motor');
+    expect(labels()).toContain('Gearbox');
+    expect(byLabel('Assembly').getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('drops the twisty column entirely so rows still line up', () => {
+    expect(fixture.nativeElement.querySelectorAll('.tx-tree__twisty').length).toBe(0);
+    expect(fixture.nativeElement.querySelector('tx-tree').classList).toContain('tx-tree--static');
+  });
+
+  it('ignores an attempt to close a branch', () => {
+    const assembly = byLabel('Assembly');
+    (assembly.querySelector('.tx-tree__row') as HTMLElement).click();
+    fixture.detectChanges();
+
+    expect(assembly.getAttribute('aria-expanded')).toBe('true');
+    expect(labels()).toContain('Motor');
+    // Nothing was committed to the model either.
+    expect(fixture.componentInstance.expanded()).toEqual([]);
+  });
+
+  it('goes back to normal collapsing when the option is turned on', () => {
+    fixture.componentInstance.collapsible.set(true);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('tx-tree').classList).not.toContain(
+      'tx-tree--static',
+    );
+    expect(fixture.nativeElement.querySelectorAll('.tx-tree__twisty').length).toBeGreaterThan(0);
+    // `expanded` was never written to, so the tree closes back up.
+    expect(labels()).not.toContain('Motor');
+  });
+
+  it('still selects a node', () => {
+    (byLabel('Gearbox').querySelector('.tx-tree__row') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(byLabel('Gearbox').getAttribute('aria-selected')).toBe('true');
+  });
+});
+
+describe('TxTree held open by a filter', () => {
+  @Component({
+    standalone: true,
+    imports: [TxTree],
+    template: `<tx-tree [nodes]="nodes" [(expanded)]="expanded" filterable label="Parts" />`,
+  })
+  class FilterHost {
+    readonly nodes = NODES;
+    readonly expanded = signal<string[]>([]);
+  }
+
+  it('does not let a click close a branch the filter is holding open', () => {
+    const fixture = TestBed.createComponent(FilterHost);
+    fixture.detectChanges();
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('.tx-tree__filter-input');
+    input.value = 'motor';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    const items = (): HTMLElement[] =>
+      Array.from(fixture.nativeElement.querySelectorAll('.tx-tree__item'));
+    const assembly = items().find((i) =>
+      i.querySelector('.tx-tree__label')!.textContent!.trim().startsWith('Assembly'),
+    )!;
+    expect(assembly.getAttribute('aria-expanded')).toBe('true');
+
+    (assembly.querySelector('.tx-tree__row') as HTMLElement).click();
+    fixture.detectChanges();
+
+    // Same defect as a non-collapsible tree: Aria owns `expanded` as a model,
+    // so ignoring the event is not enough — it has to be re-asserted.
+    expect(assembly.getAttribute('aria-expanded')).toBe('true');
+    expect(fixture.componentInstance.expanded()).toEqual([]);
+  });
+});
+
+
 @Component({ standalone: true, template: '' })
 class ServiceHost {
   readonly dialog = inject(TxDialogService);

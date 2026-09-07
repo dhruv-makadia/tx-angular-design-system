@@ -21,6 +21,22 @@ export interface TxIconDefinition {
   readonly stroked?: boolean;
 }
 
+/**
+ * What you can hand the registry for one icon.
+ *
+ * A single `d` string covers most icons, and an array covers the rest. Reach
+ * for the full {@link TxIconDefinition} only when the glyph is solid or is not
+ * drawn on a 24-unit grid.
+ */
+export type TxIconInput = string | readonly string[] | TxIconDefinition;
+
+/** Normalises the three shorthands onto one shape. */
+export function txIconDefinition(icon: TxIconInput): TxIconDefinition {
+  if (typeof icon === 'string') return { paths: [icon] };
+  if (Array.isArray(icon)) return { paths: icon as readonly string[] };
+  return icon as TxIconDefinition;
+}
+
 /** The set shipped with the library. Consumers register their own alongside. */
 const BUILT_IN: Record<string, TxIconDefinition> = {
   check: { paths: ['M4 12.5l5 5L20 6.5'] },
@@ -68,10 +84,17 @@ const BUILT_IN: Record<string, TxIconDefinition> = {
 export class TxIconRegistry {
   private readonly icons = new Map<string, TxIconDefinition>(Object.entries(BUILT_IN));
 
-  /** Adds or replaces icons. Later registrations win. */
-  register(icons: Record<string, TxIconDefinition>): void {
-    for (const [name, definition] of Object.entries(icons)) {
-      this.icons.set(name, definition);
+  /**
+   * Adds or replaces icons. Later registrations win, so an application can
+   * override a built-in name with its own drawing.
+   *
+   * ```ts
+   * registry.register({ rocket: 'M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z' });
+   * ```
+   */
+  register(icons: Record<string, TxIconInput>): void {
+    for (const [name, icon] of Object.entries(icons)) {
+      this.icons.set(name, txIconDefinition(icon));
     }
   }
 
@@ -90,13 +113,25 @@ export class TxIconRegistry {
 }
 
 /**
- * Registers additional icons at bootstrap.
+ * Registers additional icons at bootstrap. Give it a path and use the name:
  *
  * ```ts
- * providers: [provideTxIcons({ rocket: { paths: ['M12 2 …'] } })]
+ * providers: [
+ *   provideTxIcons({
+ *     rocket: 'M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z',
+ *     logo: ['M4 12h16', 'M12 4v16'],
+ *     seal: { paths: ['M12 2 …'], viewBox: '0 0 32 32', stroked: false },
+ *   }),
+ * ]
  * ```
+ *
+ * ```html
+ * <tx-icon name="rocket" />
+ * ```
+ *
+ * Call it more than once — in a feature's providers, say — and the sets merge.
  */
-export function provideTxIcons(icons: Record<string, TxIconDefinition>): EnvironmentProviders {
+export function provideTxIcons(icons: Record<string, TxIconInput>): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideEnvironmentInitializer(() => inject(TxIconRegistry).register(icons)),
   ]);

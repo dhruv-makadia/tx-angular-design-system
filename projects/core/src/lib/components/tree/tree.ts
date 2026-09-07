@@ -32,6 +32,12 @@ import { TxTreeNode } from '../../utils/types';
  *   filterable />
  * ```
  *
+ * ### Static hierarchies
+ * `[collapsible]="false"` keeps every branch open: the twisties go, `←` and
+ * `→` stop opening and closing, and `expanded` is ignored. Use it when the
+ * shape *is* the content — an outline, a bill of materials, a table of
+ * contents — and hiding part of it would hide the point.
+ *
  * ### Keyboard
  * | Key | Action |
  * | --- | --- |
@@ -49,7 +55,10 @@ import { TxTreeNode } from '../../utils/types';
   templateUrl: './tree.html',
   styleUrl: './tree.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'tx-tree' },
+  host: {
+    class: 'tx-tree',
+    '[class.tx-tree--static]': '!collapsible()',
+  },
 })
 export class TxTree<V> {
   readonly nodes = input.required<readonly TxTreeNode<V>[]>();
@@ -59,11 +68,16 @@ export class TxTree<V> {
   readonly disabled = input(false, { transform: booleanAttribute });
   /** Shows a filter field above the tree. */
   readonly filterable = input(false, { transform: booleanAttribute });
+  /**
+   * Whether branches can be closed. Set false and the tree stays fully open,
+   * with no twisties and nothing for `←` to collapse.
+   */
+  readonly collapsible = input(true, { transform: booleanAttribute });
   readonly emptyText = input($localize`:@@tx.tree.empty:Nothing here`);
 
   /** Selected node values. Always an array, even in single-select mode. */
   readonly selected = model<V[]>([]);
-  /** Values of the expanded nodes. */
+  /** Values of the expanded nodes. Ignored when `collapsible` is false. */
   readonly expanded = model<V[]>([]);
 
   readonly nodeSelect = output<TxTreeNode<V>>();
@@ -82,19 +96,31 @@ export class TxTree<V> {
     return filterTree(this.nodes(), needle);
   });
 
-  /** Matching collapses the tree open, otherwise the hits stay hidden. */
-  protected readonly effectiveExpanded = computed(() => {
-    if (!this.filterText().trim()) return this.expanded();
-    return collectValues(this.visibleNodes());
-  });
+  /**
+   * Two states force the tree open: a filter, because the hits would otherwise
+   * stay hidden, and a non-collapsible tree, where there is nothing to close.
+   */
+  protected readonly forcedOpen = computed(
+    () => !this.collapsible() || this.filterText().trim().length > 0,
+  );
+
+  protected readonly effectiveExpanded = computed(() =>
+    this.forcedOpen() ? collectValues(this.visibleNodes()) : this.expanded(),
+  );
 
   protected isExpanded(node: TxTreeNode<V>): boolean {
     return this.effectiveExpanded().some((v) => Object.is(v, node.value));
   }
 
-  protected onExpandedChange(node: TxTreeNode<V>, isOpen: boolean): void {
-    // While filtering, expansion is derived; committing it would fight the user.
-    if (this.filterText().trim()) return;
+  protected onExpandedChange(node: TxTreeNode<V>, isOpen: boolean, item: TreeItem<V>): void {
+    if (this.forcedOpen()) {
+      // Aria's `expanded` is a model, so it has already written `false` into
+      // its own signal. Our one-way binding will not push `true` back — the
+      // bound expression never changed — so the branch would close on screen
+      // even though nothing was committed. Re-assert it.
+      if (!isOpen) item.expanded.set(true);
+      return;
+    }
 
     const current = this.expanded();
     const has = current.some((v) => Object.is(v, node.value));

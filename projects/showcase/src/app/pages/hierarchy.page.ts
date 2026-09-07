@@ -77,6 +77,29 @@ const NODES: TxTreeNode<string>[] = [
       </demo-example>
 
       <demo-example
+        heading="A hierarchy that never closes"
+        note="collapsible=false keeps every branch open. The twisties go, and ← and → stop opening and closing."
+        [code]="staticCode"
+        column
+      >
+        <div class="panel">
+          <tx-tree
+            [nodes]="nodes"
+            [(selected)]="staticSelected"
+            label="Bill of materials"
+            [collapsible]="false"
+          />
+        </div>
+        <p class="prose">
+          Use it when the shape <em>is</em> the content — an outline, a bill of materials, a table
+          of contents — and hiding part of it would hide the point. Selection, arrow-key navigation
+          and typeahead all still work; only the opening and closing goes.
+          <code>expanded</code> is ignored while it is off, so turning it back on returns the tree
+          to whatever that model says.
+        </p>
+      </demo-example>
+
+      <demo-example
         heading="Lazy children"
         note="Give a node hasChildren without children and it renders as expandable; load them when expandedChange fires."
         [code]="lazyCode"
@@ -149,6 +172,7 @@ const NODES: TxTreeNode<string>[] = [
 export class HierarchyPage {
   protected readonly nodes = NODES;
   protected readonly selected = signal<string[]>([]);
+  protected readonly staticSelected = signal<string[]>(['belt']);
   protected readonly expanded = signal<string[]>(['line-1']);
 
   protected readonly columns = signal<readonly Column[]>([
@@ -180,6 +204,12 @@ export class HierarchyPage {
   label="Asset hierarchy"
   filterable />`;
 
+  protected readonly staticCode = `<tx-tree
+  [nodes]="nodes"
+  [(selected)]="selected"
+  label="Bill of materials"
+  [collapsible]="false" />`;
+
   protected readonly lazyCode = `// Expandable, but nothing loaded yet
 { value: 'sorter', label: 'Sorter', hasChildren: true }
 
@@ -205,6 +235,7 @@ constructor() {
     { name: 'expanded', type: 'model<V[]>', def: '[]', description: 'Values of the open nodes.' },
     { name: 'multi', type: 'boolean', def: 'false', description: 'Allows more than one selection.' },
     { name: 'filterable', type: 'boolean', def: 'false', description: 'Shows a filter field; matches keep their ancestors and descendants.' },
+    { name: 'collapsible', type: 'boolean', def: 'true', description: 'Set false to keep every branch open: no twisties, nothing for ← to close, and expanded is ignored.' },
     { name: 'label', type: 'string', def: "'Tree'", description: 'Accessible name for the tree.' },
     { name: 'nodeSelect', type: 'output<TxTreeNode<V>>', description: 'The node that was just selected.' },
   ];
