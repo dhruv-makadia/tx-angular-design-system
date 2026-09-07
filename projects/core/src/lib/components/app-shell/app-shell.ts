@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 /**
  * Page frame: a fixed sidebar column beside a scrolling content column, with a
@@ -18,7 +18,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
  *
  * Below `--tx-app-shell-breakpoint` (48rem) the sidebar becomes an overlay
  * drawer rather than a column, so the content keeps its full width on small
- * screens.
+ * screens. Like {@link TxHeader}, the shell reports dismissal rather than
+ * holding the state itself:
+ *
+ * ```html
+ * <tx-app-shell [drawerOpen]="drawer()" (drawerClose)="drawer.set(false)">
+ * ```
  */
 @Component({
   selector: 'tx-app-shell',
@@ -29,6 +34,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   host: {
     class: 'tx-app-shell',
     '[class.tx-app-shell--drawer-open]': 'drawerOpen()',
+    '(document:keydown.escape)': 'onEscape()',
   },
 })
 export class TxAppShell {
@@ -36,6 +42,17 @@ export class TxAppShell {
   readonly drawerOpen = input(false, { transform: booleanAttribute });
   /** Caps the content column so long text does not run edge to edge. */
   readonly maxWidth = input<string>('none');
+  /**
+   * The drawer was dismissed — by the scrim or by Escape. The shell holds no
+   * state, so clear `drawerOpen` yourself.
+   */
+  readonly drawerClose = output<void>();
+
+  protected onEscape(): void {
+    if (this.drawerOpen()) {
+      this.drawerClose.emit();
+    }
+  }
 }
 
 function booleanAttribute(value: unknown): boolean {

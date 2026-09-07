@@ -25,6 +25,8 @@ export type {
   TxPageState,
   TxColumnVariant,
   TxTableColumn,
+  TxTableAction,
+  TxTableActionEvent,
 } from './lib/utils/types';
 
 /* primitives */

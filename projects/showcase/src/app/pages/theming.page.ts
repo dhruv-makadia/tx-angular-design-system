@@ -196,10 +196,13 @@ const PRESETS: readonly {
       }
       @media (max-width: 60rem) {
         .editor {
-          grid-template-columns: 1fr;
+          /* minmax(0, 1fr), not 1fr: the auto minimum would let the panel's
+             min-content width overflow the page at narrow widths. */
+          grid-template-columns: minmax(0, 1fr);
         }
       }
       .editor__panel {
+        min-width: 0;
         position: sticky;
         top: var(--tx-space-4);
         padding: var(--tx-space-4);
@@ -209,6 +212,8 @@ const PRESETS: readonly {
       }
       .editor__head {
         display: flex;
+        flex-wrap: wrap;
+        gap: var(--tx-space-2);
         align-items: center;
         justify-content: space-between;
         margin-block-end: var(--tx-space-3);
@@ -229,11 +234,12 @@ const PRESETS: readonly {
       }
       .presets {
         display: flex;
+        flex-wrap: wrap;
         gap: var(--tx-space-1);
         margin-block-end: var(--tx-space-4);
       }
       .preset {
-        flex: 1;
+        flex: 1 1 5rem;
         padding: var(--tx-space-1) var(--tx-space-2);
         font-family: var(--tx-font-mono);
         font-size: var(--tx-text-2xs);
@@ -312,10 +318,18 @@ const PRESETS: readonly {
         outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
         outline-offset: 1px;
       }
+      .editor__preview {
+        min-width: 0;
+      }
       .preview {
         display: flex;
         flex-direction: column;
+        flex-wrap: nowrap;
         gap: var(--tx-space-4);
+      }
+      .preview > * {
+        min-width: 0;
+        max-width: 100%;
       }
       .preview__row {
         display: flex;
@@ -325,7 +339,7 @@ const PRESETS: readonly {
       }
       .preview__row--grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
       }
       .prose {
         max-width: 62ch;
@@ -335,7 +349,7 @@ const PRESETS: readonly {
       }
       .scoped {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
         gap: var(--tx-space-4);
         width: 100%;
       }

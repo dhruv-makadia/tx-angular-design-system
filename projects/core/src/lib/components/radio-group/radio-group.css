@@ -62,7 +62,8 @@
 /* Clipped, not hidden: the native input keeps focus and form semantics. */
 .tx-radio-group__native {
   position: absolute;
-  inset: 0;
+  /* 18px dot, 24x24 hit area — see the note on the checkbox. */
+  inset: -3px;
   margin: 0;
   opacity: 0;
   cursor: inherit;

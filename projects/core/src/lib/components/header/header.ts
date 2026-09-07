@@ -9,7 +9,7 @@ import { TxIcon } from '../icon/icon';
  * its own — the menu button simply reports that it was pressed.
  *
  * ```html
- * <tx-header heading="Catalogue" [showMenu]="true" (menuToggle)="rail.set(!rail())">
+ * <tx-header heading="Catalogue" menu="auto" (menuToggle)="drawer.set(!drawer())">
  *   <span slot="brand">Acme</span>
  *   <tx-input slot="middle" type="search" placeholder="Search" />
  *   <div slot="actions">
@@ -29,13 +29,22 @@ import { TxIcon } from '../icon/icon';
     class: 'tx-header',
     '[class.tx-header--sticky]': 'sticky()',
     '[class.tx-header--bordered]': 'bordered()',
+    '[attr.data-menu]': 'menu()',
   },
 })
 export class TxHeader {
   /** Page title rendered beside the brand. */
   readonly heading = input<string>('');
-  /** Shows the navigation toggle. */
-  readonly showMenu = input(false, { transform: booleanAttribute });
+  /**
+   * When the navigation toggle is shown.
+   *
+   * - `auto` — only below the shell's breakpoint, where the sidebar becomes a
+   *   drawer. Above it the sidebar is always on screen, so a toggle would open
+   *   nothing.
+   * - `always` / `never` — pin it, for apps whose navigation does not follow
+   *   the shell's pattern.
+   */
+  readonly menu = input<'auto' | 'always' | 'never'>('never');
   readonly sticky = input(true, { transform: booleanAttribute });
   readonly bordered = input(true, { transform: booleanAttribute });
   readonly menuLabel = input($localize`:@@tx.header.menu:Toggle navigation`);

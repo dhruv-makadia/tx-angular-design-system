@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
 import { TxPaginator } from './paginator';
+import { TxIcon } from '../icon/icon';
 import { TxDensity, injectTxConfig } from '../../tokens/design-system-config';
-import { TxPageState, TxSortDirection, TxSortState, TxTableColumn } from '../../utils/types';
+import {
+  TxPageState,
+  TxSortDirection,
+  TxSortState,
+  TxTableAction,
+  TxTableActionEvent,
+  TxTableColumn,
+} from '../../utils/types';
 
 /**
  * A data table with sorting and pagination.
@@ -21,6 +29,21 @@ import { TxPageState, TxSortDirection, TxSortState, TxTableColumn } from '../../
  * <tx-table [data]="rows()" [columns]="columns" paginated />
  * ```
  *
+ * ### Row actions
+ * Actions are declared as data too, and render as buttons in a trailing column:
+ *
+ * ```ts
+ * actions: TxTableAction<Item>[] = [
+ *   { id: 'edit',   label: 'Edit',   icon: 'edit' },
+ *   { id: 'delete', label: 'Delete', icon: 'trash', variant: 'danger',
+ *     disabled: (item) => item.locked },
+ * ];
+ * ```
+ *
+ * `actionSelect` reports which one was chosen and on which row. Choosing an
+ * action does not also fire `rowClick`: an action is a decision about the row,
+ * not a selection of it.
+ *
  * ### Client vs server
  * By default the table sorts and slices the array it is given. Set
  * `serverSide` and it stops touching the data: `sortChange` and `pageChange`
@@ -35,7 +58,7 @@ import { TxPageState, TxSortDirection, TxSortState, TxTableColumn } from '../../
 @Component({
   selector: 'tx-table',
   standalone: true,
-  imports: [TxPaginator],
+  imports: [TxPaginator, TxIcon],
   templateUrl: './table.html',
   styleUrl: './table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,15 +92,37 @@ export class TxTable<T> {
   /** Identity for `@for` tracking. Defaults to the row reference. */
   readonly trackBy = input<(row: T, index: number) => unknown>((row) => row);
 
+  /** Per-row buttons, rendered in a trailing column. Empty means no column. */
+  readonly actions = input<readonly TxTableAction<T>[]>([]);
+  /** Header for the action column. Blank keeps it for screen readers only. */
+  readonly actionsHeader = input($localize`:@@tx.table.actions:Actions`);
+  /** Any CSS width for the action column. */
+  readonly actionsWidth = input<string>('');
+  /**
+   * Pins the action column to the trailing edge while the table scrolls
+   * sideways. Off by default: it costs a paint layer, and it is only worth it
+   * when the table is wider than its container.
+   */
+  readonly actionsSticky = input(false, { transform: booleanAttribute });
+
   readonly sort = model<TxSortState>({ column: null, direction: null });
   readonly page = model<TxPageState>({ pageIndex: 0, pageSize: this.config.pageSize });
 
   /** `sort` and `page` are models: assigning them emits sortChange/pageChange. */
   readonly rowClick = output<T>();
+  readonly actionSelect = output<TxTableActionEvent<T>>();
 
   protected readonly loadingLabel = $localize`:@@tx.table.loading:Loading…`;
+  protected readonly actionsFallbackHeader = $localize`:@@tx.table.actions:Actions`;
 
   protected readonly visibleColumns = computed(() => this.columns().filter((c) => !c.hidden));
+
+  protected readonly hasActions = computed(() => this.actions().length > 0);
+
+  /** Colspan for the loading and empty rows, which must span the action column. */
+  protected readonly columnCount = computed(
+    () => this.visibleColumns().length + (this.hasActions() ? 1 : 0),
+  );
 
   private readonly sorted = computed(() => {
     const rows = this.data();
@@ -147,6 +192,39 @@ export class TxTable<T> {
   protected onRowClick(row: T): void {
     this.rowClick.emit(row);
   }
+
+  /** Actions that apply to this row. Predicates are the caller's, so guard them. */
+  protected rowActions(row: T): readonly TxTableAction<T>[] {
+    const actions = this.actions();
+    return actions.some((a) => a.hidden) ? actions.filter((a) => !a.hidden?.(row)) : actions;
+  }
+
+  protected isActionDisabled(action: TxTableAction<T>, row: T): boolean {
+    return action.disabled?.(row) === true;
+  }
+
+  /**
+   * An icon-only button has no text, so it always needs a name. A text button
+   * already reads as its label and only overrides it when the caller supplies
+   * row-specific wording.
+   */
+  protected actionAriaLabel(action: TxTableAction<T>, row: T): string | null {
+    if (action.ariaLabel) return action.ariaLabel(row);
+    return action.icon ? action.label : null;
+  }
+
+  protected actionTitle(action: TxTableAction<T>, row: T): string | null {
+    return action.icon ? (action.ariaLabel?.(row) ?? action.label) : null;
+  }
+
+  protected onAction(action: TxTableAction<T>, row: T, event: Event): void {
+    // The cell sits inside a clickable row. Choosing an action is a decision
+    // about the row, not a selection of it, so the row must not also fire.
+    event.stopPropagation();
+    this.actionSelect.emit({ actionId: action.id, action, row });
+  }
+
+  protected trackAction = (_: number, action: TxTableAction<T>): string => action.id;
 
   protected trackRow = (index: number, row: T): unknown => this.trackBy()(row, index);
 }

@@ -235,6 +235,22 @@
   border-block-start: var(--tx-border-width) solid var(--tx-color-border);
 }
 
+/*
+ * `auto` hides the collapse control below the shell's breakpoint, where the
+ * sidebar is a drawer: collapsing a hidden drawer to a rail achieves nothing,
+ * and it competes with the header's toggle. Breakpoint repeated — see D49.
+ */
+@media (max-width: 48rem) {
+  :host([data-collapsible='auto']) .tx-sidebar__collapse {
+    display: none;
+  }
+
+  /* With nothing left in it, the footer's border would read as a stray rule. */
+  :host([data-collapsible='auto']) .tx-sidebar__footer:not(:has(> *:not(.tx-sidebar__collapse))) {
+    display: none;
+  }
+}
+
 .tx-sidebar__collapse {
   display: flex;
   align-items: center;

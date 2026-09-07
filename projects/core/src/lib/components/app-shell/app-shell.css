@@ -8,6 +8,11 @@
   font-family: var(--tx-font-sans);
 }
 
+.tx-app-shell__scrim {
+  /* Inert above the breakpoint and while shut: no paint, no hit-testing. */
+  display: none;
+}
+
 .tx-app-shell__sidebar {
   flex: none;
   position: sticky;
@@ -48,6 +53,14 @@
 
   :host(.tx-app-shell--drawer-open) .tx-app-shell__sidebar {
     transform: translateX(0);
+  }
+
+  :host(.tx-app-shell--drawer-open) .tx-app-shell__scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--tx-z-overlay) - 1);
+    background-color: var(--tx-color-overlay);
   }
 
   .tx-app-shell__content {

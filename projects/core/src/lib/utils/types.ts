@@ -54,6 +54,55 @@ export interface TxTableColumn<T> {
 }
 
 /**
+ * A per-row action rendered as a button in {@link TxTable}'s trailing column.
+ *
+ * Declared as data alongside the columns, so a table stays described rather
+ * than assembled:
+ *
+ * ```ts
+ * actions: TxTableAction<Item>[] = [
+ *   { id: 'edit',   label: 'Edit',   icon: 'edit' },
+ *   { id: 'delete', label: 'Delete', icon: 'trash', variant: 'danger',
+ *     disabled: (item) => item.locked,
+ *     ariaLabel: (item) => `Delete ${item.sku}` },
+ * ];
+ * ```
+ */
+export interface TxTableAction<T> {
+  /** Stable identifier. Reported back as `actionId`. */
+  readonly id: string;
+  /**
+   * Accessible name, and the visible text when no `icon` is given. With an
+   * `icon` the button is icon-only and this becomes its `aria-label`.
+   */
+  readonly label: string;
+  /** Name of a registered icon. Renders an icon-only button. */
+  readonly icon?: string;
+  /** `danger` marks a destructive action so it reads as one. */
+  readonly variant?: 'default' | 'danger';
+  /**
+   * Unavailable for this row. Disabled rather than removed, so the column does
+   * not reflow from row to row and the control keeps its position under the
+   * pointer.
+   */
+  readonly disabled?: (row: T) => boolean;
+  /** Not applicable to this row at all. Removed from the group. */
+  readonly hidden?: (row: T) => boolean;
+  /**
+   * Row-specific accessible name. Ten buttons all called "Delete" are
+   * indistinguishable out of context; return `Delete CB-1042` instead.
+   */
+  readonly ariaLabel?: (row: T) => string;
+}
+
+/** What {@link TxTable} reports when a row action is chosen. */
+export interface TxTableActionEvent<T> {
+  readonly actionId: string;
+  readonly action: TxTableAction<T>;
+  readonly row: T;
+}
+
+/**
  * An entry in {@link TxSidebar}.
  *
  * Deliberately router-agnostic: the sidebar reports which item was chosen and

@@ -561,6 +561,84 @@ trigger holds chips or only a placeholder — flex growth on the value alone did
 Two regression tests assert the structural fact rather than the symptom: the chevron resolves to
 `.closest('.tx-select__trigger')`, and the clear button does not.
 
+## Small screens
+
+### D49. One navigation control at a time, chosen by a repeated breakpoint
+
+`tx-header` gained `menu: 'auto' | 'always' | 'never'` and `tx-sidebar` gained
+`collapsible: 'auto' | 'always' | 'never'`, both projected onto the host as `data-menu` /
+`data-collapsible`. Under `auto` the two are mutually exclusive: below `48rem` the shell turns the
+sidebar into an overlay drawer, so the header shows its toggle and the sidebar hides its collapse
+control; at or above it the sidebar is permanently on screen, so the toggle would open nothing and
+disappears while the collapse control returns. Verified at 320/414/767/769/1024/1440: `menu`
+visible ⟺ `collapse` hidden, with the flip exactly on the boundary.
+
+The breakpoint is now written literally in three stylesheets (`app-shell.css`, `header.css`,
+`sidebar.css`) instead of being read from `--tx-app-shell-breakpoint`. A media query cannot read a
+custom property — `@media (max-width: var(...))` is invalid — and container queries are the wrong
+instrument here because the header and the sidebar need to agree about the *shell's* width, not
+their own. `never` and `always` remain the escape hatch for anyone whose layout does not use the
+shell; the showcase's own header/sidebar demos use them for exactly that reason.
+
+The shell also grew a scrim and `(drawerClose)`. Consistent with `tx-header`, it reports the
+dismissal rather than owning the state: `drawerOpen` stays an input, and the scrim click and
+`Escape` both emit. The scrim is `display: none` above the breakpoint and while shut, so it costs
+nothing in the desktop layout and never intercepts a pointer.
+
+### D50. Responsive faults are found by measurement, not by looking
+
+A second Puppeteer pass (`responsive.js`) walks 12 pages x 6 viewports (320-1440) and reports four
+classes of fault: horizontal page overflow, elements past the right edge with no scrollable
+ancestor, pointer targets under 24x24 (WCAG 2.5.8), and text clipped by a fixed height. The first
+run found 2 overflowing pages, 49 escaping elements and 7 undersized targets; all are now zero.
+
+Three of the causes were structural rather than cosmetic, and none were visible without measuring:
+
+- `flex-direction: column` inherited `flex-wrap: wrap` from `.example__stage`, so the demo stage
+  laid out in *columns* sized to their max-content, and a wide table pushed the page out instead of
+  scrolling inside its own container.
+- `grid-template-columns: 1fr` is `minmax(auto, 1fr)`; the theming editor's panel won the track
+  with its min-content width. `minmax(0, 1fr)` is the fix, and the same reasoning turned twelve
+  grid tracks into `minmax(min(Xrem, 100%), 1fr)`.
+- Content projected into `.tx-header__middle` is styled by the *consumer's* stylesheet, so
+  `.tx-header__middle > * { min-width: 0 }` never matched it. The container had to solve it:
+  below `30rem` the header wraps and the middle slot takes its own line.
+
+The undersized targets were all visually-hidden native inputs (18x18 checkbox and radio, 36x20
+toggle). Their hit areas are bled out with negative `inset` on the absolutely positioned input, so
+nothing moves and a checkbox with no label — a table row selector — still clears 24x24.
+
+### D51. Row actions are data, and they are not a row selection
+
+`tx-table` gained `actions: TxTableAction<T>[]`, rendered as buttons in a trailing column, with
+`actionsHeader`, `actionsWidth`, `actionsSticky` and an `actionSelect` output. Columns were already
+declared as data; actions had no reason to be the exception, and a content-projection API would have
+meant the caller assembling a cell per row.
+
+Four decisions inside it:
+
+- **`disabled(row)` and `hidden(row)` are different things.** Disabled means *not right now*: the
+  button stays, so the column does not reflow between rows and the control keeps its position under
+  the pointer. Hidden means *not applicable to this kind of row at all*, and it is removed. The
+  showcase demonstrates both on the same table.
+- **Choosing an action is not selecting the row.** The handler calls `stopPropagation`, so a table
+  can carry both `rowClick` and actions without the click being ambiguous — which reverses an
+  earlier piece of guidance that said not to combine them.
+- **`ariaLabel(row)` exists because ten buttons called "Delete" are indistinguishable.** An
+  icon-only action always gets a name (falling back to `label`); a text action gets one only when
+  the caller supplies row-specific wording, since it already reads as its own label. The `title`
+  tooltip is icon-only — repeating visible text is noise.
+- **Disabled needs opacity, not just a colour.** A ghost button has no surface to grey out, and in
+  dark theme `--tx-color-disabled-content` (#aaa79f) sits 6% off the muted ink it replaces
+  (#b6b2aa). Measured in the browser, the two were nearly indistinguishable; `opacity: 0.55` carries
+  the difference in both themes. Disabled controls are exempt under WCAG 1.4.3, so dimming is safe.
+
+`actionsSticky` pins the column while the table scrolls sideways — worth it on a phone, so it is
+opt-in rather than automatic. Its hairline is a pseudo-element, not a border: with
+`border-collapse: collapse` the *table* paints the borders and a collapsed border does not travel
+with a sticky cell. `position: sticky` is itself a containing block, so an absolutely positioned
+`::before` keeps the rule logical instead of forcing a physical `box-shadow`.
+
 ---
 
 ## Open

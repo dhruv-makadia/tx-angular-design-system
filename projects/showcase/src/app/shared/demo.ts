@@ -148,7 +148,14 @@ export class DemoPage {
       }
       .example__stage--column {
         flex-direction: column;
+        /* nowrap is load-bearing: a wrapping column container sizes each
+           column to its max-content, so a wide table would push the page out
+           instead of scrolling inside itself. */
+        flex-wrap: nowrap;
         align-items: stretch;
+      }
+      .example__stage > * {
+        max-width: 100%;
       }
       .example__code {
         margin: 0;
@@ -393,7 +400,7 @@ export class DemoKeys {
       }
       .guide {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
         gap: var(--tx-space-4);
       }
       .guide__col {

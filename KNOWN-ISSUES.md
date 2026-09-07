@@ -2,8 +2,9 @@
 
 State of `@tx-angular-design-system/core` at **v0.1.0**, before first publish.
 
-Nothing here is a crash or a broken component — the suite is green and both themes are
-contrast-clean. These are the gaps, deliberate trade-offs and sharp edges a consumer will hit.
+Nothing here is a crash or a broken component — the suite is green, both themes are
+contrast-clean, and 12 pages x 6 viewports (320-1440) show no horizontal overflow and no pointer
+target under 24x24. These are the gaps, deliberate trade-offs and sharp edges a consumer will hit.
 
 Ordered by how likely they are to bite you.
 
@@ -96,7 +97,8 @@ to *animate*. Below that the panel snaps shut instead of sliding. It always clos
 ## 5. Table is missing much of the originally specified surface
 
 Shipped: declarative columns, client and server sort, pagination with typed page numbers, sticky
-header, three densities, loading and empty states, row click, horizontal scroll.
+header, three densities, loading and empty states, row click, a row-actions column (optionally
+pinned), horizontal scroll.
 
 **Not built:**
 
@@ -104,7 +106,7 @@ header, three densities, loading and empty states, row click, horizontal scroll.
 - Expandable rows
 - Column visibility toggle, column reorder, column resize
 - Virtual scroll for large datasets
-- Dedicated row-actions column
+- An overflow menu for row actions — they all render inline, so keep them to about three
 - CSV export hook
 - Template-based custom cells (only `value` accessors and `variant` typography)
 
@@ -205,7 +207,25 @@ This is the **showcase**, not the library. The library's own budget is enforced 
 
 ---
 
-## 14. Smaller things
+## 14. The drawer is a drawer, not a modal
+
+Below `48rem` the shell slides the sidebar in over the content behind a scrim. It is dismissible
+from the scrim, from `Escape`, and by choosing an item — but it does **not** trap focus, and it does
+not mark the content behind it `inert`. Tabbing past the last navigation item walks into the page
+underneath, and a screen reader can reach it too.
+
+That is a deliberate limit, not an oversight: making it modal means owning focus restoration and a
+scroll lock, which belongs to a dialog primitive rather than to a layout component. If your
+application needs a modal drawer, render `tx-sidebar` inside `TxDialogService` instead of the
+shell's drawer slot.
+
+Related: the breakpoint is written literally in `app-shell.css`, `header.css` and `sidebar.css`
+because a media query cannot read `--tx-app-shell-breakpoint`. Changing the shell's breakpoint means
+changing three files, and `menu`/`collapsible` will disagree if you change only one. See D49.
+
+---
+
+## 15. Smaller things
 
 - **Theme editor scope.** Surface and text fields in the showcase editor apply to the theme
   currently on screen. Editing Canvas in light does not change dark — correct, but worth knowing.
@@ -218,3 +238,10 @@ This is the **showcase**, not the library. The library's own budget is enforced 
   density of wherever the CDK overlay container sits, not the trigger's.
 - **No `tx-form-field` wrapper.** Field styling is shared through a stylesheet, not a component, so
   there is no way to wrap a third-party control in the design system's field chrome.
+- **The header wraps below `30rem`.** Content in `slot="middle"` (typically a search field) takes
+  its own line, because projected content is styled by the consumer's stylesheet and cannot be
+  given `min-width: 0` from inside the header. On a 320px screen the header is therefore two rows
+  tall when a middle slot is filled.
+- **A wide table clips its own footer on a phone.** `.tx-table__scroll` scrolls the rows, but the
+  paginator sits outside it in the footer. It wraps rather than overflowing, so nothing is lost —
+  but at 320px it becomes three stacked rows.

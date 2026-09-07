@@ -207,7 +207,7 @@ const ELEVATION = ['1', '2', '3', '4'] as const;
         margin: 0;
         padding: 0;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
         gap: 1px;
         background-color: var(--tx-color-border);
         border: var(--tx-border-width) solid var(--tx-color-border);
@@ -216,8 +216,9 @@ const ELEVATION = ['1', '2', '3', '4'] as const;
       }
       .semantic li {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: var(--tx-space-3);
+        gap: var(--tx-space-2) var(--tx-space-3);
         padding: var(--tx-space-2) var(--tx-space-3);
         background-color: var(--tx-color-surface-raised);
       }
@@ -230,6 +231,7 @@ const ELEVATION = ['1', '2', '3', '4'] as const;
       }
       .semantic__role {
         margin-inline-start: auto;
+        min-width: 0;
         font-size: var(--tx-text-xs);
         color: var(--tx-color-on-surface-muted);
         text-align: end;
@@ -289,7 +291,7 @@ const ELEVATION = ['1', '2', '3', '4'] as const;
       }
       .split {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
         gap: var(--tx-space-6);
       }
       .tiles {

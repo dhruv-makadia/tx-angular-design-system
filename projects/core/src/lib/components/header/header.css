@@ -27,6 +27,22 @@
   min-width: 0;
 }
 
+/*
+ * `auto` makes the toggle a small-screen affordance: above the shell's
+ * breakpoint the sidebar is permanently on screen, so the button would open
+ * nothing. The breakpoint is repeated here rather than shared, because a media
+ * query cannot read a custom property — see DECISIONS D49.
+ */
+:host([data-menu='auto']) .tx-header__menu {
+  display: none;
+}
+
+@media (max-width: 48rem) {
+  :host([data-menu='auto']) .tx-header__menu {
+    display: grid;
+  }
+}
+
 .tx-header__menu {
   display: grid;
   place-items: center;
@@ -80,10 +96,33 @@
   min-width: 0;
 }
 
+
 .tx-header__actions {
   display: flex;
   align-items: center;
   gap: var(--tx-space-2);
   flex: none;
   margin-inline-start: auto;
+}
+
+/*
+ * On a phone the middle slot cannot share a 320px row with the brand, the
+ * heading and the trailing actions — a search field would be crushed to zero
+ * and overflow. Give it its own line instead. Projected content is styled by
+ * the consumer's stylesheet, not this one, so the fix has to be the container's.
+ */
+@media (max-width: 30rem) {
+  :host {
+    flex-wrap: wrap;
+    padding-block: var(--tx-space-2);
+  }
+
+  .tx-header__middle {
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  .tx-header__middle:not(:has(*)) {
+    display: none;
+  }
 }

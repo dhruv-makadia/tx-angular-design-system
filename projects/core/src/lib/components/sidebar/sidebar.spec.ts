@@ -144,7 +144,7 @@ describe('TxSidebar', () => {
   standalone: true,
   imports: [TxHeader],
   template: `
-    <tx-header heading="Catalogue" [showMenu]="true" (menuToggle)="toggles = toggles + 1">
+    <tx-header heading="Catalogue" menu="always" (menuToggle)="toggles = toggles + 1">
       <span slot="brand">Acme</span>
       <div slot="actions"><button type="button">Sign out</button></div>
     </tx-header>
@@ -191,5 +191,24 @@ describe('TxHeader', () => {
     const plain = TestBed.createComponent(Plain);
     plain.detectChanges();
     expect(plain.nativeElement.querySelector('.tx-header__menu')).toBeNull();
+  });
+
+  it('marks the menu mode on the host so CSS can make it responsive', () => {
+    const header: HTMLElement = fixture.nativeElement.querySelector('tx-header');
+    expect(header.getAttribute('data-menu')).toBe('always');
+
+    // `auto` still renders the button; a media query hides it above the
+    // shell's breakpoint, where the sidebar is permanently on screen.
+    @Component({
+      standalone: true,
+      imports: [TxHeader],
+      template: `<tx-header heading="X" menu="auto" />`,
+    })
+    class Auto {}
+
+    const auto = TestBed.createComponent(Auto);
+    auto.detectChanges();
+    expect(auto.nativeElement.querySelector('tx-header').getAttribute('data-menu')).toBe('auto');
+    expect(auto.nativeElement.querySelector('.tx-header__menu')).not.toBeNull();
   });
 });

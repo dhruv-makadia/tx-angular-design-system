@@ -4,6 +4,8 @@ import {
   TxPageState,
   TxSortState,
   TxTable,
+  TxTableAction,
+  TxTableActionEvent,
   TxTableColumn,
 } from '@tx-angular-design-system/core';
 import { ApiRow, DemoApi, DemoExample, DemoGuidance, DemoKeys, DemoPage } from '../shared/demo';
@@ -49,6 +51,40 @@ import { CATALOGUE, CatalogueItem, STATUS_LABELS } from '../catalogue-data';
         <p class="prose">
           <code>value</code> derives a display value without changing the underlying row, so
           formatting stays out of the template and sorting still sees what the user sees.
+        </p>
+      </demo-example>
+
+      <demo-example
+        heading="Row actions"
+        note="Actions are data too. They render in a trailing column, and choosing one does not also fire rowClick."
+        [code]="actionsCode"
+        column
+      >
+        <tx-table
+          label="Catalogue with actions"
+          [data]="actionRows"
+          [columns]="shortColumns"
+          [actions]="actions"
+          [trackBy]="trackBySku"
+          (actionSelect)="onAction($event)"
+          (rowClick)="onRowClick($event)"
+          actionsSticky
+        />
+        <p class="state">
+          @if (lastAction(); as event) {
+            <code>{{ event }}</code>
+          } @else {
+            Choose an action, or click a row, to see what the table reports.
+          }
+        </p>
+        <p class="prose">
+          <strong>Restock</strong> is hidden on rows that are not low — it does not apply, so it is
+          not there. <strong>Delete</strong> is disabled on discontinued rows rather than removed,
+          so the column does not reflow from row to row and the button stays put under the pointer.
+          The icon-only action carries a row-specific accessible name: ten buttons all called
+          &ldquo;Edit&rdquo; are indistinguishable out of context. <code>actionsSticky</code> pins
+          the column to the trailing edge, so on a narrow screen the actions stay reachable while
+          the rest of the table scrolls sideways underneath them.
         </p>
       </demo-example>
 
@@ -118,7 +154,8 @@ import { CATALOGUE, CatalogueItem, STATUS_LABELS } from '../catalogue-data';
         color: var(--tx-color-on-surface);
       }
       .density-picker {
-        display: inline-flex;
+        display: flex;
+        flex-wrap: wrap;
         gap: var(--tx-space-1);
         margin-block-end: var(--tx-space-3);
       }
@@ -145,7 +182,7 @@ import { CATALOGUE, CatalogueItem, STATUS_LABELS } from '../catalogue-data';
       }
       .states {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
         gap: var(--tx-space-4);
         width: 100%;
       }
@@ -194,6 +231,48 @@ export class TablePage {
     },
   ];
 
+  protected readonly lastAction = signal<string | null>(null);
+
+  /** Chosen so the demo shows an in-stock, a low and a discontinued row. */
+  protected readonly actionRows = CATALOGUE.slice(0, 3).concat(
+    CATALOGUE.filter((item) => item.status === 'discontinued').slice(0, 1),
+  );
+
+  /** A narrower set, so the action column is visible without scrolling. */
+  protected readonly shortColumns: readonly TxTableColumn<CatalogueItem>[] = [
+    { key: 'sku', header: 'SKU', variant: 'data', sortable: true, width: '7.5rem' },
+    { key: 'name', header: 'Item', sortable: true },
+    {
+      key: 'stock',
+      header: 'On hand',
+      variant: 'numeric',
+      align: 'end',
+      sortable: true,
+      width: '7rem',
+      value: (row) => row.stock.toLocaleString('en-GB'),
+    },
+  ];
+
+  protected readonly actions: readonly TxTableAction<CatalogueItem>[] = [
+    { id: 'edit', label: 'Edit', icon: 'edit', ariaLabel: (row) => `Edit ${row.sku}` },
+    { id: 'restock', label: 'Restock', hidden: (row) => row.stock > 20 },
+    {
+      id: 'delete',
+      label: 'Delete',
+      variant: 'danger',
+      disabled: (row) => row.status === 'discontinued',
+      ariaLabel: (row) => `Delete ${row.sku}`,
+    },
+  ];
+
+  protected onAction(event: TxTableActionEvent<CatalogueItem>): void {
+    this.lastAction.set(`actionSelect → ${event.actionId} on ${event.row.sku}`);
+  }
+
+  protected onRowClick(row: CatalogueItem): void {
+    this.lastAction.set(`rowClick → ${row.sku}`);
+  }
+
   protected readonly basicCode = `<tx-table
   label="Catalogue"
   [data]="rows()"
@@ -210,6 +289,22 @@ export class TablePage {
     variant: 'numeric', align: 'end', sortable: true,
     value: (row) => row.stock.toLocaleString('en-GB') },
 ];`;
+
+  protected readonly actionsCode = `actions: TxTableAction<Item>[] = [
+  { id: 'edit', label: 'Edit', icon: 'edit',
+    ariaLabel: (row) => \`Edit \${row.sku}\` },
+  { id: 'restock', label: 'Restock',
+    hidden: (row) => row.stock > 20 },
+  { id: 'delete', label: 'Delete', variant: 'danger',
+    disabled: (row) => row.status === 'discontinued' },
+];
+
+<tx-table
+  [data]="rows()"
+  [columns]="columns"
+  [actions]="actions"
+  (actionSelect)="run($event.actionId, $event.row)"
+  actionsSticky />`;
 
   protected readonly densityCode = `<tx-table [data]="rows()" [columns]="columns" density="compact" />
 
@@ -236,7 +331,12 @@ export class TablePage {
     { name: 'density', type: "'compact' | 'standard' | 'comfortable'", def: "'standard'", description: '34, 44 or 52 px rows.' },
     { name: 'stickyHeader', type: 'boolean', def: 'true', description: 'Keeps the header visible while the body scrolls.' },
     { name: 'trackBy', type: '(row: T, i: number) => unknown', def: 'row => row', description: 'Identity for @for. Use a stable id so rows survive re-sorting.' },
-    { name: 'rowClick', type: 'output<T>', description: 'Fires when a row is clicked.' },
+    { name: 'actions', type: 'TxTableAction<T>[]', def: '[]', description: 'Per-row buttons in a trailing column: id, label, icon, variant, disabled(row), hidden(row), ariaLabel(row). Empty means no column.' },
+    { name: 'actionsHeader', type: 'string', def: "'Actions'", description: 'Header for the action column. Blank keeps the name for screen readers only.' },
+    { name: 'actionsWidth', type: 'string', def: "''", description: 'Any CSS width for the action column.' },
+    { name: 'actionsSticky', type: 'boolean', def: 'false', description: 'Pins the action column to the trailing edge while the table scrolls sideways.' },
+    { name: 'rowClick', type: 'output<T>', description: 'Fires when a row is clicked — but not when a row action is chosen.' },
+    { name: 'actionSelect', type: 'output<TxTableActionEvent<T>>', description: 'A row action was chosen. Carries actionId, the action, and the row.' },
   ];
 
   protected readonly paginatorApi: readonly ApiRow[] = [
@@ -248,7 +348,7 @@ export class TablePage {
   ];
 
   protected readonly keys = [
-    { keys: 'Tab', action: 'Move to a sortable header, then into the paginator' },
+    { keys: 'Tab', action: 'Move to a sortable header, then through each row’s actions, then into the paginator' },
     { keys: 'Enter · Space', action: 'Cycle a column: ascending → descending → unsorted' },
     { keys: 'Enter', action: 'Jump to the typed page number' },
     { keys: '↑ ↓', action: 'Step one page, in the page field' },
@@ -260,12 +360,14 @@ export class TablePage {
     'Use a stable trackBy so rows are not rebuilt on every sort.',
     'Mark identifiers and measurements as data or numeric so columns align.',
     'Switch to serverSide before the dataset outgrows the browser, not after.',
+    'Disable an action that does not apply to a row rather than removing it, unless it is never relevant to that kind of row at all.',
   ];
 
   protected readonly donts = [
     'Do not put more than about seven columns on screen; hide the rest.',
-    'Do not make the whole row clickable and also put buttons in it.',
+    'Do not put more than about three actions in a row; the rest belong on the record itself.',
     'Do not sort on a formatted string when the underlying value is a number or date.',
     'Do not paginate a list of five things.',
+    'Do not rely on an icon alone to say what a destructive action does; give it an ariaLabel naming the row.',
   ];
 }

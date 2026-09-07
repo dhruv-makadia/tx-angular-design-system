@@ -1,3 +1,11 @@
+<!--
+  The scrim is always in the DOM so it can fade; CSS keeps it out of the way
+  (and out of the hit-testing) above the breakpoint and while the drawer is
+  shut. It carries no role: the sidebar behind it is the labelled landmark, and
+  the same dismissal is available from the keyboard via Escape.
+-->
+<div class="tx-app-shell__scrim" aria-hidden="true" (click)="drawerClose.emit()"></div>
+
 <div class="tx-app-shell__sidebar">
   <ng-content select="[slot=sidebar]" />
 </div>

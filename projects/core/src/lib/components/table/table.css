@@ -67,6 +67,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--tx-space-1);
+  /* Negative margin keeps the header's visual height while giving the button
+     a 24px tall hit area. */
+  min-height: 1.5rem;
+  margin-block: -0.1875rem;
   padding: 0;
   font: inherit;
   letter-spacing: inherit;
@@ -197,4 +201,127 @@
 .tx-table__footer {
   border-block-start: var(--tx-border-width) solid var(--tx-color-border);
   background-color: var(--tx-color-surface);
+}
+
+/* --- row actions ------------------------------------------------------ *
+ * A trailing column of buttons. The cells stop growing so the data columns
+ * keep the width, and the group hugs the trailing edge.
+ * ---------------------------------------------------------------------- */
+
+.tx-table__th--actions,
+.tx-table__td--actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.tx-table__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--tx-space-1);
+}
+
+.tx-table__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tx-space-1);
+  /* 24x24 minimum for WCAG 2.5.8 even at compact density. */
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  padding-inline: var(--tx-space-2);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-sm);
+  font-weight: var(--tx-weight-medium);
+  color: var(--tx-color-on-surface-muted);
+  background-color: transparent;
+  border: var(--tx-border-width) solid transparent;
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard),
+    border-color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-table__action--icon {
+  padding-inline: 0;
+}
+
+.tx-table__action:hover:not(:disabled) {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+  border-color: var(--tx-color-border);
+}
+
+.tx-table__action:active:not(:disabled) {
+  background-color: var(--tx-color-pressed);
+}
+
+.tx-table__action:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+.tx-table__action--danger:hover:not(:disabled) {
+  color: var(--tx-color-danger);
+  background-color: var(--tx-color-danger-surface);
+  border-color: color-mix(in srgb, var(--tx-color-danger) 30%, transparent);
+}
+
+/*
+ * A ghost button has no surface to grey out, and in dark theme
+ * --tx-color-disabled-content sits only a few percent off the muted ink it
+ * replaces. Opacity carries the difference in both themes.
+ */
+.tx-table__action:disabled {
+  color: var(--tx-color-disabled-content);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/*
+ * Pinned actions stay reachable while a wide table scrolls sideways. The
+ * background is opaque so rows do not show through, and it has to be repainted
+ * on hover because the row's own hover colour sits underneath it.
+ */
+.tx-table__cell--pinned {
+  position: sticky;
+  inset-inline-end: 0;
+  background-color: var(--tx-color-surface-raised);
+}
+
+/*
+ * The hairline is a pseudo-element rather than a border: with
+ * `border-collapse: collapse` the table paints the borders, and a collapsed
+ * border does not travel with a sticky cell. `position: sticky` is itself a
+ * containing block, so this stays logical rather than becoming a box-shadow.
+ */
+.tx-table__cell--pinned::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--tx-border-width);
+  background-color: var(--tx-color-border);
+}
+
+.tx-table__th.tx-table__cell--pinned {
+  z-index: 1;
+  background-color: var(--tx-color-surface-variant);
+}
+
+.tx-table__row:hover .tx-table__td.tx-table__cell--pinned {
+  background-color: var(--tx-color-surface-raised);
+  background-image: linear-gradient(var(--tx-color-hover), var(--tx-color-hover));
+}
+
+.tx-table__hidden-header {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

@@ -93,7 +93,7 @@ const STATS: readonly { value: string; label: string }[] = [
     `
       .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
         gap: 1px;
         margin: 0;
         background-color: var(--tx-color-border);
@@ -123,7 +123,7 @@ const STATS: readonly { value: string; label: string }[] = [
       }
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
         gap: var(--tx-space-4);
       }
       .card-body {

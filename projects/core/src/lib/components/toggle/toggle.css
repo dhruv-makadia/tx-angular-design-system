@@ -44,7 +44,8 @@
 
 .tx-toggle__native {
   position: absolute;
-  inset: 0;
+  /* The track is 36x20; only the height needs bleeding to clear 24px. */
+  inset: -2px 0;
   margin: 0;
   opacity: 0;
   cursor: inherit;

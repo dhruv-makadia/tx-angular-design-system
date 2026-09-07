@@ -1,4 +1,4 @@
-<tx-app-shell [drawerOpen]="drawerOpen()">
+<tx-app-shell [drawerOpen]="drawerOpen()" (drawerClose)="drawerOpen.set(false)">
   <tx-sidebar
     slot="sidebar"
     [sections]="nav"
@@ -13,7 +13,7 @@
     <span slot="brand-compact" class="brand__mark" aria-hidden="true"></span>
   </tx-sidebar>
 
-  <tx-header slot="header" [heading]="pageTitle()" [showMenu]="true" (menuToggle)="drawerOpen.set(!drawerOpen())">
+  <tx-header slot="header" [heading]="pageTitle()" menu="auto" (menuToggle)="drawerOpen.set(!drawerOpen())">
     <div slot="actions" class="header-actions">
       <div class="segmented" role="group" aria-label="Density">
         @for (option of densities; track option) {

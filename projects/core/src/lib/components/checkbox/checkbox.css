@@ -31,7 +31,9 @@
  */
 .tx-checkbox__native {
   position: absolute;
-  inset: 0;
+  /* The box is 18px; the hit area is bled out to 24x24 for WCAG 2.5.8, which
+     matters when the checkbox has no label to click (a table row selector). */
+  inset: -3px;
   margin: 0;
   opacity: 0;
   cursor: inherit;

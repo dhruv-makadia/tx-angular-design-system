@@ -116,6 +116,7 @@
 
 <div class="tx-sidebar__footer">
   <ng-content select="[slot=footer]" />
+  @if (collapsible() !== 'never') {
   <button
     type="button"
     class="tx-sidebar__collapse"
@@ -126,4 +127,5 @@
     <tx-icon [name]="collapsed() ? 'chevron-right' : 'chevron-left'" size="sm" />
     <span class="tx-sidebar__label">{{ collapseLabel }}</span>
   </button>
+  }
 </div>

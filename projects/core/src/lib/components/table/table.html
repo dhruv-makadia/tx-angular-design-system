@@ -34,20 +34,37 @@
             }
           </th>
         }
+
+        @if (hasActions()) {
+          <th
+            scope="col"
+            class="tx-table__th tx-table__th--actions tx-table__th--end"
+            [class.tx-table__cell--pinned]="actionsSticky()"
+            [style.width]="actionsWidth() || null"
+          >
+            @if (actionsHeader()) {
+              <span>{{ actionsHeader() }}</span>
+            } @else {
+              <!-- A column still needs a name even when the design has no room
+                   to show one. -->
+              <span class="tx-table__hidden-header">{{ actionsFallbackHeader }}</span>
+            }
+          </th>
+        }
       </tr>
     </thead>
 
     <tbody class="tx-table__body">
       @if (loading()) {
         <tr class="tx-table__state-row">
-          <td class="tx-table__state" [attr.colspan]="visibleColumns().length">
+          <td class="tx-table__state" [attr.colspan]="columnCount()">
             <span class="tx-table__spinner" aria-hidden="true"></span>
             <span role="status">{{ loadingLabel }}</span>
           </td>
         </tr>
       } @else if (isEmpty()) {
         <tr class="tx-table__state-row">
-          <td class="tx-table__state" [attr.colspan]="visibleColumns().length">
+          <td class="tx-table__state" [attr.colspan]="columnCount()">
             <ng-content select="[txTableEmpty]">
               <span>{{ emptyText() }}</span>
             </ng-content>
@@ -65,6 +82,34 @@
                 [class.tx-table__td--center]="column.align === 'center'"
               >
                 {{ cellValue(column, row) }}
+              </td>
+            }
+
+            @if (hasActions()) {
+              <td
+                class="tx-table__td tx-table__td--actions tx-table__td--end"
+                [class.tx-table__cell--pinned]="actionsSticky()"
+              >
+                <div class="tx-table__actions">
+                  @for (action of rowActions(row); track trackAction($index, action)) {
+                    <button
+                      type="button"
+                      class="tx-table__action"
+                      [class.tx-table__action--danger]="action.variant === 'danger'"
+                      [class.tx-table__action--icon]="!!action.icon"
+                      [disabled]="isActionDisabled(action, row)"
+                      [attr.aria-label]="actionAriaLabel(action, row)"
+                      [attr.title]="actionTitle(action, row)"
+                      (click)="onAction(action, row, $event)"
+                    >
+                      @if (action.icon) {
+                        <tx-icon [name]="action.icon" size="sm" />
+                      } @else {
+                        {{ action.label }}
+                      }
+                    </button>
+                  }
+                </div>
               </td>
             }
           </tr>

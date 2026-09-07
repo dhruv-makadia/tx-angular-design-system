@@ -40,6 +40,7 @@ import { TxNavItem, TxNavSection } from '../../utils/types';
   host: {
     class: 'tx-sidebar',
     '[class.tx-sidebar--collapsed]': 'collapsed()',
+    '[attr.data-collapsible]': 'collapsible()',
   },
 })
 export class TxSidebar {
@@ -48,6 +49,16 @@ export class TxSidebar {
   readonly label = input($localize`:@@tx.sidebar.label:Main navigation`);
   /** Collapses to an icon rail. Labels stay in the accessibility tree. */
   readonly collapsed = model(false);
+
+  /**
+   * When the collapse control is offered.
+   *
+   * - `auto` — only at or above the shell's breakpoint. Below it the sidebar is
+   *   a drawer that is already hidden, so collapsing it to a rail offers
+   *   nothing and competes with the header's toggle.
+   * - `always` / `never` — pin it.
+   */
+  readonly collapsible = input<'auto' | 'always' | 'never'>('auto');
 
   /** Id of the item to mark current. */
   readonly activeId = model<string | null>(null);

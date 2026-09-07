@@ -203,7 +203,7 @@ import {
     `
       .filters {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
         gap: var(--tx-space-4);
       }
       .summary {
@@ -243,7 +243,7 @@ import {
       }
       .form {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
         gap: var(--tx-space-4);
         align-items: start;
       }

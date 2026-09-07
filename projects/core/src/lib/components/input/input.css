@@ -61,8 +61,9 @@
 .tx-input__clear {
   display: grid;
   place-items: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  /* WCAG 2.5.8 target size; the glyph inside stays 0.875rem. */
+  width: 1.5rem;
+  height: 1.5rem;
   flex: none;
   margin-inline-end: var(--tx-space-2);
   padding: 0;

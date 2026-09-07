@@ -77,8 +77,12 @@
 .tx-chip__remove {
   display: grid;
   place-items: center;
-  width: 0.875rem;
-  height: 0.875rem;
+  /* The visible glyph is 0.625rem; the box is padded out to a 24px hit area
+     without changing how the chip looks. */
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-block: -0.3125rem;
+  margin-inline-end: -0.25rem;
   flex: none;
   border-radius: var(--tx-radius-full);
   cursor: pointer;

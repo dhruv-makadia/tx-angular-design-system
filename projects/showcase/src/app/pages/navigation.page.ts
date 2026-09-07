@@ -72,7 +72,7 @@ const DEMO_NAV: TxNavSection[] = [
         </div>
 
         <div class="frame">
-          <tx-sidebar [sections]="nav" [(activeId)]="active" [(collapsed)]="collapsed">
+          <tx-sidebar [sections]="nav" [(activeId)]="active" [(collapsed)]="collapsed" collapsible="always">
             <div slot="brand" class="brand">
               <span class="brand__mark" aria-hidden="true"></span>
               <span class="brand__name">Acme</span>
@@ -92,7 +92,7 @@ const DEMO_NAV: TxNavSection[] = [
         column
       >
         <div class="frame frame--header">
-          <tx-header heading="Items" [showMenu]="true" [sticky]="false" (menuToggle)="toggles.set(toggles() + 1)">
+          <tx-header heading="Items" menu="always" [sticky]="false" (menuToggle)="toggles.set(toggles() + 1)">
             <span slot="brand" class="brand__name">Acme</span>
             <tx-input slot="middle" type="search" placeholder="Search items" [(value)]="query">
               <tx-icon slot="prefix" name="search" size="sm" />
@@ -110,7 +110,10 @@ const DEMO_NAV: TxNavSection[] = [
         <p class="prose">
           <code>tx-app-shell</code> owns layout only: a sticky sidebar column beside a scrolling
           content column, with the header above the content. Below 48rem the sidebar becomes an
-          overlay drawer so the content keeps its width. This page is built with it.
+          overlay drawer — dismissible from the scrim or Escape — so the content keeps its width.
+          The two navigation controls are mutually exclusive by design: the header's toggle appears
+          only below that breakpoint, and the sidebar's collapse control only at or above it, so
+          you never see a control that opens nothing. This page is built with it.
         </p>
       </demo-example>
 
@@ -227,7 +230,7 @@ export class NavigationPage {
   [(collapsed)]="collapsed"
   (itemSelect)="router.navigate([$event.id])" />`;
 
-  protected readonly headerCode = `<tx-header heading="Items" [showMenu]="true" (menuToggle)="drawer.set(!drawer())">
+  protected readonly headerCode = `<tx-header heading="Items" menu="auto" (menuToggle)="drawer.set(!drawer())">
   <span slot="brand">Acme</span>
   <tx-input slot="middle" type="search" placeholder="Search items" [(value)]="query" />
   <div slot="actions">
@@ -235,9 +238,9 @@ export class NavigationPage {
   </div>
 </tx-header>`;
 
-  protected readonly shellCode = `<tx-app-shell [drawerOpen]="drawer()">
+  protected readonly shellCode = `<tx-app-shell [drawerOpen]="drawer()" (drawerClose)="drawer.set(false)">
   <tx-sidebar slot="sidebar" [sections]="nav" [activeId]="activeId()" (itemSelect)="go($event.id)" />
-  <tx-header slot="header" [heading]="pageTitle()" [showMenu]="true" (menuToggle)="drawer.set(!drawer())" />
+  <tx-header slot="header" [heading]="pageTitle()" menu="auto" (menuToggle)="drawer.set(!drawer())" />
   <router-outlet />
 </tx-app-shell>`;
 
@@ -245,13 +248,14 @@ export class NavigationPage {
     { name: 'sections', type: 'TxNavSection[]', description: 'Titled runs of items. Items take id, label, icon, badge, href, disabled and one level of children.' },
     { name: 'activeId', type: 'model<string | null>', def: 'null', description: 'Which item is current. Sets aria-current and opens its parent group.' },
     { name: 'collapsed', type: 'model<boolean>', def: 'false', description: 'Icon rail. Labels are clipped, not removed, so accessible names survive.' },
+    { name: 'collapsible', type: "'auto' | 'always' | 'never'", def: "'auto'", description: 'When the collapse control is offered. auto = only at or above the shell breakpoint.' },
     { name: 'label', type: 'string', def: "'Main navigation'", description: 'Accessible name for the nav landmark.' },
     { name: 'itemSelect', type: 'output<TxNavItem>', description: 'Fires when a leaf item is chosen. Groups toggle instead.' },
   ];
 
   protected readonly headerApi: readonly ApiRow[] = [
     { name: 'heading', type: 'string', def: "''", description: 'Page title beside the brand.' },
-    { name: 'showMenu', type: 'boolean', def: 'false', description: 'Shows the navigation toggle.' },
+    { name: 'menu', type: "'auto' | 'always' | 'never'", def: "'never'", description: 'When the navigation toggle shows. auto = only below the shell breakpoint, where the sidebar is a drawer.' },
     { name: 'sticky', type: 'boolean', def: 'true', description: 'Pins the header to the top of its scroll container.' },
     { name: 'bordered', type: 'boolean', def: 'true', description: 'Hairline along the bottom edge.' },
     { name: 'menuToggle', type: 'output<void>', description: 'The menu button was pressed. The header holds no state itself.' },
@@ -260,6 +264,7 @@ export class NavigationPage {
   protected readonly shellApi: readonly ApiRow[] = [
     { name: 'drawerOpen', type: 'boolean', def: 'false', description: 'On narrow screens, whether the sidebar drawer is showing.' },
     { name: 'maxWidth', type: 'string', def: "'none'", description: 'Caps the content column so long text does not run edge to edge.' },
+    { name: 'drawerClose', type: 'output<void>', description: 'The drawer was dismissed — scrim or Escape. The shell holds no state, so clear drawerOpen yourself.' },
   ];
 
   protected readonly keys = [
@@ -272,7 +277,7 @@ export class NavigationPage {
     'Keep the sidebar to one level of nesting; deeper hierarchies belong on the page.',
     'Derive activeId from the URL so a refresh or a deep link stays correct.',
     'Use badges for counts that change what someone would do next.',
-    'Collapse to a rail on small screens rather than hiding navigation entirely.',
+    'Let the shell decide which navigation control to show: menu="auto" and the default collapsible="auto" never appear together.',
   ];
 
   protected readonly donts = [
