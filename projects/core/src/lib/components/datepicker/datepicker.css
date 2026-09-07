@@ -1,0 +1,103 @@
+:host {
+  display: block;
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-md);
+  color: var(--tx-color-on-surface);
+}
+
+:host(.tx-datepicker--invalid) .tx-field__control {
+  border-color: var(--tx-color-danger);
+}
+
+:host(.tx-datepicker--disabled) .tx-field__control {
+  background-color: var(--tx-color-disabled-surface);
+  border-color: var(--tx-color-border);
+}
+
+.tx-datepicker__field {
+  flex: 1;
+  min-width: 0;
+  min-height: calc(var(--tx-density-control-height) - 2px);
+  padding-inline-start: var(--tx-density-control-padding-x);
+  /* Digits line up between rows, which is the point of a date column. */
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-sm);
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+}
+
+.tx-datepicker__field:focus-visible {
+  /* The ring belongs to .tx-field__control so it wraps the trigger too. */
+  outline: none;
+}
+
+.tx-datepicker__field::placeholder {
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-datepicker__field:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-datepicker__trigger,
+.tx-datepicker__clear {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  padding: 0;
+  color: var(--tx-color-on-surface-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+}
+
+.tx-datepicker__trigger {
+  margin-inline-end: var(--tx-space-2);
+}
+
+.tx-datepicker__clear {
+  margin-inline-end: var(--tx-space-1);
+}
+
+.tx-datepicker__trigger:hover:not(:disabled),
+.tx-datepicker__clear:hover {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+}
+
+.tx-datepicker__trigger:focus-visible,
+.tx-datepicker__clear:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+.tx-datepicker__trigger:disabled {
+  color: var(--tx-color-disabled-content);
+  cursor: not-allowed;
+}
+
+.tx-datepicker__trigger svg,
+.tx-datepicker__clear svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/*
+ * The panel is rendered into the CDK's overlay container, outside this
+ * component's DOM — but Angular still scopes the rule to this component's
+ * emulated encapsulation, and the template is compiled here, so the attribute
+ * travels with the element.
+ */
+.tx-datepicker__panel {
+  background-color: var(--tx-color-surface-raised);
+  border: var(--tx-border-width) solid var(--tx-color-border);
+  border-radius: var(--tx-radius-lg);
+  box-shadow: var(--tx-elevation-3);
+}

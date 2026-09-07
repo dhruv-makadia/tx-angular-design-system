@@ -37,6 +37,26 @@
         </span>
 
         <span class="tx-reorder-list__position">{{ i + 1 }}</span>
+
+        @if (visibleActions(item).length > 0) {
+          <span class="tx-reorder-list__actions">
+            @for (action of visibleActions(item); track action.id) {
+              <tx-button
+                size="sm"
+                [variant]="action.variant === 'danger' ? 'danger' : 'text'"
+                [disabled]="isActionDisabled(action, item)"
+                [ariaLabel]="action.icon ? actionLabel(action, item) : ''"
+                (activated)="onAction(action, item)"
+              >
+                @if (action.icon) {
+                  <tx-icon [name]="action.icon" size="sm" />
+                } @else {
+                  {{ action.label }}
+                }
+              </tx-button>
+            }
+          </span>
+        }
       </li>
     }
   </ul>

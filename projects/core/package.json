@@ -1,6 +1,6 @@
 {
   "name": "@tx-angular-design-system/core",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Angular design system: accessible, signal-based, token-themed components built on Angular Aria and the CDK.",
   "license": "MIT",
   "keywords": [

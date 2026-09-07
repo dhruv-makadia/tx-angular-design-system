@@ -42,6 +42,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/selects.page').then((m) => m.SelectsPage),
   },
   {
+    path: 'dates',
+    title: 'Dates & progress · tx/core',
+    loadComponent: () => import('./pages/dates.page').then((m) => m.DatesPage),
+  },
+  {
     path: 'table',
     title: 'Table · tx/core',
     loadComponent: () => import('./pages/table.page').then((m) => m.TablePage),

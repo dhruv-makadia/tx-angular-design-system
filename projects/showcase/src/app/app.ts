@@ -33,6 +33,7 @@ const NAV: TxNavSection[] = [
       { id: 'buttons', label: 'Buttons & icons', icon: 'plus' },
       { id: 'inputs', label: 'Text & choice', icon: 'check' },
       { id: 'selects', label: 'Selects', icon: 'list' },
+      { id: 'dates', label: 'Dates & progress', icon: 'info' },
       { id: 'table', label: 'Table', icon: 'table' },
       { id: 'hierarchy', label: 'Tree & reordering', icon: 'list' },
       { id: 'overlays', label: 'Disclosure & overlays', icon: 'menu' },

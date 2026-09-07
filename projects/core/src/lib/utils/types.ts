@@ -68,7 +68,7 @@ export interface TxTableColumn<T> {
  * ];
  * ```
  */
-export interface TxTableAction<T> {
+export interface TxItemAction<T> {
   /** Stable identifier. Reported back as `actionId`. */
   readonly id: string;
   /**
@@ -95,11 +95,25 @@ export interface TxTableAction<T> {
   readonly ariaLabel?: (row: T) => string;
 }
 
+/**
+ * Per-row actions were first needed by {@link TxTable}, which is where the name
+ * came from. The shape says nothing about tables, and {@link TxReorderList}
+ * needs exactly the same thing, so the alias is kept for the published name.
+ */
+export type TxTableAction<T> = TxItemAction<T>;
+
 /** What {@link TxTable} reports when a row action is chosen. */
 export interface TxTableActionEvent<T> {
   readonly actionId: string;
-  readonly action: TxTableAction<T>;
+  readonly action: TxItemAction<T>;
   readonly row: T;
+}
+
+/** What {@link TxReorderList} reports when an item action is chosen. */
+export interface TxReorderActionEvent<T> {
+  readonly actionId: string;
+  readonly action: TxItemAction<T>;
+  readonly item: T;
 }
 
 /**

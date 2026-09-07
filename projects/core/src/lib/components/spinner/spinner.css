@@ -1,0 +1,92 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tx-space-2);
+  /* currentColor throughout, so the ring takes the colour of its context. */
+  color: var(--tx-color-accent);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-sm);
+  vertical-align: middle;
+}
+
+/*
+ * stroke-width is in viewBox units, so it scales with the rendered box: the
+ * same number draws thinner at 16px than at 40px. These are pre-divided to land
+ * on roughly 2, 2.25 and 3 rendered pixels — otherwise a small spinner comes
+ * out as a hairline and a large one as a doughnut.
+ */
+:host([data-size='sm']) {
+  --tx-spinner-size: 1rem;
+  --tx-spinner-stroke: 3; /* 3 * 16/24 = 2px */
+}
+
+:host([data-size='md']) {
+  --tx-spinner-size: 1.5rem;
+  --tx-spinner-stroke: 2.25; /* 24/24, so as specified */
+}
+
+:host([data-size='lg']) {
+  --tx-spinner-size: 2.5rem;
+  --tx-spinner-stroke: 1.8; /* 1.8 * 40/24 = 3px */
+}
+
+.tx-spinner--inline {
+  vertical-align: -0.15em;
+}
+
+.tx-spinner__ring {
+  width: var(--tx-spinner-size);
+  height: var(--tx-spinner-size);
+  flex: none;
+  /* -90deg puts 0% at twelve o'clock, where people read it from. */
+  transform: rotate(-90deg);
+}
+
+.tx-spinner__track {
+  stroke: var(--tx-color-border);
+  stroke-width: var(--tx-spinner-stroke);
+}
+
+.tx-spinner__arc {
+  stroke: currentColor;
+  stroke-width: var(--tx-spinner-stroke);
+}
+
+/* Indeterminate: a fixed arc, spun. */
+.tx-spinner:not(.tx-spinner--determinate) .tx-spinner__ring {
+  animation: tx-spinner-rotate 800ms linear infinite;
+}
+
+/* Determinate: the arc length changes, so animate that instead of spinning. */
+.tx-spinner--determinate .tx-spinner__arc {
+  transition: stroke-dashoffset var(--tx-duration-md) var(--tx-ease-standard);
+}
+
+.tx-spinner__label {
+  color: var(--tx-color-on-surface-muted);
+}
+
+@keyframes tx-spinner-rotate {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}
+
+/*
+ * A spinner that cannot spin has to say "busy" some other way, or it reads as a
+ * broken ring. Slow the rotation rather than stopping it: the guidance is to
+ * avoid vestibular triggers, and a small, slow, non-parallax rotation is not
+ * one. A pulse would flash, which is worse.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .tx-spinner:not(.tx-spinner--determinate) .tx-spinner__ring {
+    animation-duration: 2.4s;
+  }
+
+  .tx-spinner--determinate .tx-spinner__arc {
+    transition: none;
+  }
+}

@@ -1,0 +1,20 @@
+<svg class="tx-spinner__ring" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <!-- The track only reads as a track when there is a value to compare it to. -->
+  @if (isDeterminate()) {
+    <circle class="tx-spinner__track" cx="12" cy="12" [attr.r]="radius" fill="none" />
+  }
+  <circle
+    class="tx-spinner__arc"
+    cx="12"
+    cy="12"
+    [attr.r]="radius"
+    fill="none"
+    stroke-linecap="round"
+    [attr.stroke-dasharray]="circumference"
+    [attr.stroke-dashoffset]="dashOffset()"
+  />
+</svg>
+
+@if (showLabel()) {
+  <span class="tx-spinner__label">{{ label() }}</span>
+}

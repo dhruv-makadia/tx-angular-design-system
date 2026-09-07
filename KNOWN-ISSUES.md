@@ -3,7 +3,7 @@
 State of `@tx-angular-design-system/core` at **v0.1.0**, before first publish.
 
 Nothing here is a crash or a broken component — the suite is green, both themes are
-contrast-clean, and 12 pages x 6 viewports (320-1440) show no horizontal overflow and no pointer
+contrast-clean, and 13 pages x 6 viewports (320-1440) show no horizontal overflow and no pointer
 target under 24x24. These are the gaps, deliberate trade-offs and sharp edges a consumer will hit.
 
 Ordered by how likely they are to bite you.
@@ -174,16 +174,19 @@ nothing has been rendered or tested in RTL.
 
 ---
 
-## 11. Tier 2 components do not exist
+## 11. Most of Tier 2 does not exist
 
-`tx-autocomplete`, `tx-datepicker`, `tx-date-range`, `tx-chips`, `tx-tabs`, `tx-menu`,
-`tx-tooltip`, `tx-badge`, `tx-avatar`, `tx-breadcrumb`, `tx-pagination` (standalone),
-`tx-stepper`, `tx-progress`, `tx-skeleton`, `tx-empty-state`, `tx-alert`, `tx-drawer`,
-`tx-file-upload`, `tx-divider`, `tx-tag`.
+Still missing: `tx-autocomplete`, `tx-date-range`, `tx-chips`, `tx-tabs`, `tx-menu`, `tx-tooltip`,
+`tx-badge`, `tx-avatar`, `tx-breadcrumb`, `tx-pagination` (standalone), `tx-stepper`,
+`tx-skeleton`, `tx-empty-state`, `tx-alert`, `tx-drawer`, `tx-file-upload`, `tx-divider`,
+`tx-tag`.
 
-**The datepicker is the notable gap.** Angular Aria has no date primitive, and a from-scratch
-accessible datepicker is expensive. This is the one place Angular Material still earns its weight;
-adding it would reintroduce Material as a dependency for that component alone.
+`tx-datepicker`, `tx-calendar` and `tx-spinner` **are** built — the spinner covers the determinate
+progress case too, so `tx-progress` is not planned separately. This entry used to say the
+datepicker was the one place Angular Material still earned its weight. That turned out not to be
+true: Aria has no date primitive, and its `Grid` cannot express calendar navigation (D54), but the
+grid semantics and keyboard are a few hundred lines and are fully tested. The datepicker's real
+limits are in §15.
 
 ---
 
@@ -227,7 +230,31 @@ changing three files, and `menu`/`collapsible` will disagree if you change only 
 
 ---
 
-## 15. Smaller things
+## 15. The datepicker is a single date, and only a date
+
+Shipped: a typable ISO field, a `role="grid"` calendar with the full WAI-ARIA keyboard, `min` /
+`max` / `dateDisabled`, `firstDayOfWeek`, `locale`, reactive forms, and a standalone `tx-calendar`.
+
+**Not built:**
+
+- Date *ranges* — no start/end pair, no range highlight, no two-month view
+- Time. It is a calendar date; there is no hour, minute or time zone anywhere in it
+- Month and year *pickers* — you page by month, or `Shift`+`PageUp`/`PageDown` by year, but there
+  is no dropdown to jump to a far-away year. Paging back to a birthdate is painful
+- Locale-aware *parsing*. Display names come from `Intl`, but typed input is read as ISO
+  (`yyyy-mm-dd`, and the same with `/` or `.`). Supply `parseDate` for anything else
+
+Two sharp edges worth knowing:
+
+- **Values are `Date` at local midnight.** Two dates for the same day compare equal only because
+  the component normalises them on the way in. A value you compare *outside* the component, built
+  with a time component, will not match one that came out of the field.
+- **`formatDate` and `parseDate` must round-trip.** Change one without the other and the field will
+  reject what it just wrote.
+
+---
+
+## 16. Smaller things
 
 - **Theme editor scope.** Surface and text fields in the showcase editor apply to the theme
   currently on screen. Editing Canvas in light does not change dark — correct, but worth knowing.
@@ -244,6 +271,8 @@ changing three files, and `menu`/`collapsible` will disagree if you change only 
   its own line, because projected content is styled by the consumer's stylesheet and cannot be
   given `min-width: 0` from inside the header. On a 320px screen the header is therefore two rows
   tall when a middle slot is filled.
+- **The spinner has no delay.** Rendering one for an operation that finishes in 200 ms produces a
+  flash that reads as a fault. Gate it yourself; there is no built-in `showAfter`.
 - **A wide table clips its own footer on a phone.** `.tx-table__scroll` scrolls the rows, but the
   paginator sits outside it in the footer. It wraps rather than overflowing, so nothing is lost —
   but at 320px it becomes three stacked rows.

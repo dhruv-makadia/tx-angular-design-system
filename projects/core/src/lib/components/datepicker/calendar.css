@@ -1,0 +1,155 @@
+:host {
+  display: block;
+  padding: var(--tx-space-3);
+  font-family: var(--tx-font-sans);
+  font-size: var(--tx-text-sm);
+  color: var(--tx-color-on-surface);
+  /* Sized in ch-free units so the grid does not reflow between locales. */
+  --tx-calendar-cell: 2rem;
+}
+
+.tx-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tx-space-2);
+  margin-block-end: var(--tx-space-2);
+}
+
+.tx-calendar__month {
+  margin: 0;
+  font-family: var(--tx-font-display);
+  font-size: var(--tx-text-md);
+  font-weight: var(--tx-weight-semibold);
+  letter-spacing: var(--tx-tracking-tight);
+  text-align: center;
+  /* Fixed width so paging does not shuffle the arrows sideways. */
+  flex: 1;
+}
+
+.tx-calendar__page {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  padding: 0;
+  color: var(--tx-color-on-surface-muted);
+  background: none;
+  border: var(--tx-border-width) solid transparent;
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-calendar__page:hover:not(:disabled) {
+  color: var(--tx-color-on-surface);
+  background-color: var(--tx-color-hover);
+  border-color: var(--tx-color-border);
+}
+
+.tx-calendar__page:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+.tx-calendar__page:disabled {
+  color: var(--tx-color-disabled-content);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tx-calendar__page svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tx-calendar__grid {
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tx-calendar__weekday {
+  width: var(--tx-calendar-cell);
+  padding-block-end: var(--tx-space-1);
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-2xs);
+  font-weight: var(--tx-weight-medium);
+  letter-spacing: var(--tx-tracking-label);
+  text-transform: uppercase;
+  color: var(--tx-color-on-surface-subtle);
+}
+
+.tx-calendar__cell {
+  padding: 1px;
+}
+
+.tx-calendar__day {
+  display: grid;
+  place-items: center;
+  width: var(--tx-calendar-cell);
+  height: var(--tx-calendar-cell);
+  padding: 0;
+  font-family: var(--tx-font-mono);
+  font-size: var(--tx-text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-color-on-surface);
+  background-color: transparent;
+  border: var(--tx-border-width) solid transparent;
+  border-radius: var(--tx-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--tx-duration-fast) var(--tx-ease-standard),
+    color var(--tx-duration-fast) var(--tx-ease-standard);
+}
+
+.tx-calendar__day:hover:not(:disabled) {
+  background-color: var(--tx-color-hover);
+}
+
+.tx-calendar__day:focus-visible {
+  outline: var(--tx-border-width-thick) solid var(--tx-color-focus);
+  outline-offset: 1px;
+}
+
+/*
+ * Days from the neighbouring months are context, not content: dimmed enough to
+ * recede, still legible enough to click deliberately.
+ */
+.tx-calendar__day--outside {
+  color: var(--tx-color-on-surface-subtle);
+}
+
+/*
+ * Today is a ring, selection is a fill. Two different channels, so a day that
+ * is both still reads as both.
+ */
+.tx-calendar__day--today {
+  border-color: var(--tx-color-border-strong);
+  font-weight: var(--tx-weight-semibold);
+}
+
+.tx-calendar__day--selected,
+.tx-calendar__day--selected:hover:not(:disabled) {
+  color: var(--tx-color-on-accent);
+  background-color: var(--tx-color-accent);
+  border-color: var(--tx-color-accent);
+  font-weight: var(--tx-weight-semibold);
+}
+
+.tx-calendar__day:disabled {
+  color: var(--tx-color-disabled-content);
+  opacity: 0.55;
+  cursor: not-allowed;
+  /* Struck through, so "not available" survives being read in greyscale. */
+  text-decoration: line-through;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-calendar__day,
+  .tx-calendar__page {
+    transition: none;
+  }
+}

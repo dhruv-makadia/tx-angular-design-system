@@ -25,6 +25,8 @@ export type {
   TxPageState,
   TxColumnVariant,
   TxTableColumn,
+  TxItemAction,
+  TxReorderActionEvent,
   TxTableAction,
   TxTableActionEvent,
 } from './lib/utils/types';
@@ -40,6 +42,26 @@ export {
   type TxIconInput,
 } from './lib/components/icon/icon-registry';
 export { TxCard, type TxCardVariant } from './lib/components/card/card';
+export { TxSpinner, type TxSpinnerSize } from './lib/components/spinner/spinner';
+export { TxDatepicker } from './lib/components/datepicker/datepicker';
+export { TxCalendar, type TxCalendarDay } from './lib/components/datepicker/calendar';
+export {
+  txAddDays,
+  txAddMonths,
+  txAddYears,
+  txClampDate,
+  txDaysInMonth,
+  txEndOfMonth,
+  txFormatIsoDate,
+  txIsSameDay,
+  txIsSameMonth,
+  txIsValidDate,
+  txIsWithin,
+  txMonthGrid,
+  txParseIsoDate,
+  txStartOfDay,
+  txStartOfMonth,
+} from './lib/utils/date';
 
 /* form controls */
 export { TxInput, type TxInputType } from './lib/components/input/input';

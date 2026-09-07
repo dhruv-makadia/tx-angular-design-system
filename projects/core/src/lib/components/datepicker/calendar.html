@@ -1,0 +1,80 @@
+<div class="tx-calendar__header">
+  <button
+    type="button"
+    class="tx-calendar__page"
+    [attr.aria-label]="prevLabel"
+    [disabled]="disabled() || !canPrev()"
+    (click)="page(-1)"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M10 3.5L5.5 8l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
+
+  <!--
+    aria-live, because paging does not move focus off the button that did it —
+    without an announcement a screen-reader user gets no feedback at all.
+  -->
+  <h2 class="tx-calendar__month" [id]="id + '-month'" aria-live="polite">{{ monthLabel() }}</h2>
+
+  <button
+    type="button"
+    class="tx-calendar__page"
+    [attr.aria-label]="nextLabel"
+    [disabled]="disabled() || !canNext()"
+    (click)="page(1)"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M6 3.5L10.5 8L6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+  </button>
+</div>
+
+<table
+  #grid
+  class="tx-calendar__grid"
+  role="grid"
+  [attr.aria-label]="label()"
+  [attr.aria-labelledby]="id + '-month'"
+  (keydown)="onKeydown($event)"
+>
+  <thead>
+    <tr role="row">
+      @for (weekday of weekdays(); track weekday.long) {
+        <th class="tx-calendar__weekday" scope="col" [attr.abbr]="weekday.long">
+          {{ weekday.short }}
+        </th>
+      }
+    </tr>
+  </thead>
+
+  <tbody>
+    @for (week of weeks(); track trackWeek($index)) {
+      <tr role="row">
+        @for (day of week; track trackDay($index, day)) {
+          <td class="tx-calendar__cell" role="gridcell" [attr.aria-selected]="day.selected">
+            <!--
+              A button, not a div with a handler: it gets activation, disabled
+              semantics and the focus ring from the platform. Roving tabindex
+              keeps the whole grid to one tab stop.
+            -->
+            <button
+              type="button"
+              class="tx-calendar__day"
+              [class.tx-calendar__day--outside]="day.outside"
+              [class.tx-calendar__day--today]="day.today"
+              [class.tx-calendar__day--selected]="day.selected"
+              [tabindex]="day.focusable ? 0 : -1"
+              [disabled]="day.disabled"
+              [attr.aria-label]="day.label"
+              [attr.aria-current]="day.today ? 'date' : null"
+              (click)="select(day)"
+            >
+              {{ day.day }}
+            </button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

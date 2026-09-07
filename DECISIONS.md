@@ -693,6 +693,78 @@ if (this.forcedOpen()) {
 Both paths now share `forcedOpen()`, and both have a regression test that clicks a parent and
 asserts `aria-expanded` — the rendered fact — rather than the model, which was already correct.
 
+## Dates and progress
+
+### D54. Aria's Grid cannot express a calendar, so the keyboard is ours
+
+The standing rule is to use Angular Aria wherever a primitive exists, and `ngGrid` /
+`ngGridRow` / `ngGridCell` does exist. It still does not fit here.
+
+Aria's `Grid` moves a roving tab stop across a **fixed** set of cells. A calendar is not that:
+`→` on 31 March has to page to April and land on the 1st, which re-renders all 42 cells and needs
+the active one moved to a different index. `Grid` exposes no public API to set the active cell —
+only `scrollActiveCellIntoView` — so every month-crossing key would have been a fight with its
+internal state. That is the exact shape of the two bugs already in this file: the Listbox
+`selectionMode` default (D14) and the TreeItem `expanded` model (D53). Choosing it here would have
+been choosing a third.
+
+So `TxCalendar` emits the semantics Aria would have emitted — `role="grid"`, `role="gridcell"`,
+`aria-selected`, `aria-current="date"`, one tab stop via roving `tabindex` — and owns the
+navigation: `←→` day, `↑↓` week, `Home`/`End` week ends, `PageUp`/`PageDown` month,
+`Shift` + those year. Every key has a test.
+
+Two smaller calls inside it:
+
+- **A disabled day still takes focus.** Skipping it would make the edge of a range unreachable by
+  keyboard and would hide from a screen-reader user that the day exists at all. Only `min` and
+  `max` stop the cursor; `dateDisabled` days are landed on and reported as disabled.
+- **Paging announces itself.** The month heading is `aria-live="polite"`, because the page buttons
+  keep focus after a press — without it a screen-reader user gets no feedback that anything moved.
+
+### D55. A date field you can type into, that never silently corrects you
+
+The field is a real text input, not a read-only box that only the calendar can fill. Typing
+`2026-03-14` beats paging to it, and for anyone who cannot use a pointer it is the only route.
+
+**The default format is ISO `yyyy-mm-dd`.** `03/04/2026` is two different days depending on who
+reads it; a design system should not ship that as a default. `formatDate` and `parseDate` are
+inputs, changed together, for anyone who needs otherwise.
+
+**Unreadable text is reported, not discarded.** `2026-02-30` is rejected rather than rolled forward
+into March — the value stays as it was, the text stays on screen, `parseError` fires and the field
+goes `aria-invalid` with a `role="alert"` message. Silent correction is worse than a refusal: it is
+invisible, and it is wrong about half the time. Out-of-range but readable dates get their own
+message, because "we cannot read that" would be a lie.
+
+**Values are calendar dates carried in a native `Date` at local midnight.** `Date` is an instant
+and an instant is the wrong type for "the 14th", but it is the type every consumer already has, and
+a date library would break the air-gapped, zero-runtime-dependency constraint. Everything in
+`utils/date.ts` works in local time and never touches UTC — `txFormatIsoDate` exists precisely
+because `toISOString` shifts the day either side of the date line. `txAddMonths` clamps rather than
+overflowing, since the naive `setMonth` turns 31 January into 3 March and makes month paging skip a
+month seven times a year. Both have tests.
+
+`writeValue` also accepts an ISO string, because that is what comes back from JSON and a form seeded
+from an API would otherwise render blank.
+
+### D56. The spinner's geometry had to be measured, not eyeballed
+
+`TxSpinner` is a `progressbar` in both modes: indeterminate is spelled as no `aria-valuenow`, which
+is what ARIA actually means by unknown, rather than a separate role or a `role="status"` hack.
+
+Two defects only showed up under measurement, both invisible in the source:
+
+- **`stroke-width` is in viewBox units, so it scales with the rendered box.** The same number draws
+  1.7px at 16px and 3.3px at 40px. The per-size values had been set the wrong way round, making the
+  small spinner a hairline; they are now pre-divided to land near 2, 2.25 and 3 rendered pixels.
+- **A quarter-turn arc reads as a stray tick mark at 16px.** The indeterminate arc is now 70% of
+  the ring — a ring with a gap plainly reads as a spinner. The maths was right in both cases; only
+  the rendered result was wrong.
+
+Reduced motion slows the rotation to 2.4s rather than stopping it. A spinner that cannot spin reads
+as a broken ring, and a pulse would flash — a small, slow, non-parallax rotation is not a vestibular
+trigger.
+
 ---
 
 ## Open

@@ -19,6 +19,8 @@ import {
   viewChildren,
 } from '@angular/core';
 import { TxIcon } from '../icon/icon';
+import { TxItemAction, TxReorderActionEvent } from '../../utils/types';
+import { TxButton } from '../button/button';
 
 /**
  * A list whose order the user can change.
@@ -50,7 +52,7 @@ import { TxIcon } from '../icon/icon';
 @Component({
   selector: 'tx-reorder-list',
   standalone: true,
-  imports: [CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder, TxIcon],
+  imports: [CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder, TxIcon, TxButton],
   templateUrl: './reorder-list.html',
   styleUrl: './reorder-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,8 +76,17 @@ export class TxReorderList<T> {
   readonly label = input($localize`:@@tx.reorderList.label:Reorderable list`);
   readonly emptyText = input($localize`:@@tx.reorderList.empty:Nothing to reorder`);
 
+  /**
+   * Buttons rendered after each item, in the same shape the table uses. A list
+   * being reordered is usually being configured, and the entries themselves
+   * need editing and withdrawing without leaving for another screen.
+   */
+  readonly actions = input<readonly TxItemAction<T>[]>([]);
+
   /** Emitted with the new order whenever it changes. */
   readonly orderChange = output<readonly T[]>();
+
+  readonly actionSelect = output<TxReorderActionEvent<T>>();
 
   /** Announced after a keyboard move; screen readers get no drag feedback. */
   protected readonly announcement = signal('');
@@ -85,6 +96,23 @@ export class TxReorderList<T> {
   protected readonly count = computed(() => this.items().length);
 
   protected readonly dragLabel = $localize`:@@tx.reorderList.drag:Reorder`;
+
+  /** Actions that apply to this item; a hidden one is dropped from the group. */
+  protected visibleActions(item: T): readonly TxItemAction<T>[] {
+    return this.actions().filter((action) => !action.hidden?.(item));
+  }
+
+  protected isActionDisabled(action: TxItemAction<T>, item: T): boolean {
+    return this.disabled() || (action.disabled?.(item) ?? false);
+  }
+
+  protected actionLabel(action: TxItemAction<T>, item: T): string {
+    return action.ariaLabel?.(item) ?? action.label;
+  }
+
+  protected onAction(action: TxItemAction<T>, item: T): void {
+    this.actionSelect.emit({ actionId: action.id, action, item });
+  }
 
   protected onDrop(event: CdkDragDrop<readonly T[]>): void {
     if (event.previousIndex === event.currentIndex) return;

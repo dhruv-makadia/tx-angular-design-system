@@ -132,3 +132,35 @@
     transition: none;
   }
 }
+
+/*
+ * Item actions sit after the position marker. They stay quiet until the row is
+ * pointed at or focused, so a long list reads as an order rather than as a
+ * wall of buttons — but they remain in the layout so rows do not reflow.
+ */
+.tx-reorder-list__actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+  margin-inline-start: var(--tx-space-2);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.tx-reorder-list__item:hover .tx-reorder-list__actions,
+.tx-reorder-list__item:focus-within .tx-reorder-list__actions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .tx-reorder-list__actions {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-reorder-list__actions {
+    transition: none;
+  }
+}
